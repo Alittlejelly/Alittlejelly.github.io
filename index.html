@@ -9,8 +9,11 @@
     <meta name="robots" content="index, follow">
     <meta name="format-detection" content="telephone=no">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Cache-Control" content="max-age=31536000, public">
     <title>果冻设计站</title>
-    
+    <link rel="preload" href="theme_preview/recircle.webp" as="image" type="image/webp">
+    <link rel="preload" href="theme_preview/fangbai.webp" as="image" type="image/webp">
+
     <style>
         /* 导入MiSansVF字体 */
         @font-face {
@@ -105,7 +108,7 @@
         
         /* 为主题卡片设置图片 */
         .content-container .theme-card:nth-child(1) .lower-rect {
-            background-image: url('theme_preview/recircle.png');
+            background-image: url('theme_preview/recircle.webp');
             background-size: cover;
             background-position: center;
             image-rendering: -webkit-optimize-contrast;
@@ -114,7 +117,7 @@
         }
         
         .content-container .theme-card:nth-child(2) .lower-rect {
-            background-image: url('theme_preview/fangbai.png');
+            background-image: url('theme_preview/fangbai.webp');
             background-size: cover;
             background-position: center;
             image-rendering: -webkit-optimize-contrast;
@@ -123,7 +126,7 @@
         }
         
         .content-container .theme-card:nth-child(3) .lower-rect {
-            background-image: url('theme_preview/yuanying.png');
+            background-image: url('theme_preview/yuanying.webp');
             background-size: cover;
             background-position: center;
             image-rendering: -webkit-optimize-contrast;
@@ -132,7 +135,7 @@
         }
         
         .content-container .theme-card:nth-child(4) .lower-rect {
-            background-image: url('theme_preview/yunqing.png');
+            background-image: url('theme_preview/yunqing.webp');
             background-size: cover;
             background-position: center;
             image-rendering: -webkit-optimize-contrast;
@@ -141,7 +144,7 @@
         }
         
         .content-container .theme-card:nth-child(5) .lower-rect {
-            background-image: url('theme_preview/recirclestar.png');
+            background-image: url('theme_preview/recirclestar.webp');
             background-size: cover;
             background-position: center;
             image-rendering: -webkit-optimize-contrast;
@@ -150,7 +153,7 @@
         }
         
         .content-container .theme-card:nth-child(6) .lower-rect {
-            background-image: url('theme_preview/binfen.png');
+            background-image: url('theme_preview/binfen.webp');
             background-size: cover;
             background-position: center;
             image-rendering: -webkit-optimize-contrast;
@@ -190,7 +193,7 @@
             white-space: nowrap;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             position: absolute;
-            bottom: 0;
+            bottom: -1px;
             z-index: 2;
             font-weight: 500;
         }
@@ -265,7 +268,7 @@
         
         /* 为图标卡片设置图片 */
         .icon-container .icon-card:nth-child(1) .icon-lower-rect {
-            background-image: url('iconpack_preview/recicle.png'); 
+            background-image: url('iconpack_preview/recicle.webp'); 
             background-size: cover;
             background-position: center;
             image-rendering: -webkit-optimize-contrast;
@@ -274,7 +277,7 @@
         }
         
         .icon-container .icon-card:nth-child(2) .icon-lower-rect {
-            background-image: url('iconpack_preview/circlestart.png'); 
+            background-image: url('iconpack_preview/circlestart.webp'); 
             background-size: cover;
             background-position: center;
             image-rendering: -webkit-optimize-contrast;
@@ -532,11 +535,11 @@
         .close:hover {
             opacity: 0.8;
         }
-@media (max-width: 480px) {
-    .theme-card-btn {
-        padding: 10px 20px; /* 更小屏幕下的padding */
-        font-size: 16px;
-    }
+        @media (max-width: 480px) {
+        .theme-card-btn {
+            padding: 15px 90px; /* 更小屏幕下的padding */
+            font-size: 20px;
+         }
 }
     </style>
 </head>
