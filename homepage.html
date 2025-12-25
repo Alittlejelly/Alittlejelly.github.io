@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="果冻主题网页 - 提供小米、OPPO、vivo等手机主题和图标包下载与分享">
+    <meta name="keywords" content="果冻主题,手机主题,图标包,小米主题,OPPO主题,vivo主题">
+    <meta name="author" content="果冻主题">
+    <meta name="robots" content="index, follow">
+    <meta name="format-detection" content="telephone=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>果冻主题网页</title>
+    
+    <style>
+        /* 导入MiSansVF字体 */
+        @font-face {
+            font-family: 'MiSans';
+            src: url('fonts/MiSansVF.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        
+        /* 全局样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'MiSans', sans-serif;
+        }
+        
+        body {
+            background: #FFEFE3;
+            padding: 60px 20px;
+            padding-left: 100px;
+            min-height: 100vh;
+        }
+        
+        /* 标题样式 */
+        .title {
+            font-size: 48px;
+            color: #352E29;
+            margin-bottom: 40px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        /* 小字体样式 */
+        .small-fonts {
+            font-size: 20px;
+            color: #352E29;
+            text-align: center;
+            margin-bottom: 60px;
+            max-width: 100px;
+            margin-left: auto;
+            margin-right: auto;
+            font-weight: bold;
+        }
+        
+        /* 主题按钮样式 */
+        .theme-btn {
+            background-color: #FFC197;
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            font-size: 24px;
+            border-radius: 30px;
+            margin-bottom: 60px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(255, 152, 0, 0.2);
+            position: relative;
+            z-index: 10;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .theme-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 152, 0, 0.3);
+        }
+        
+        /* 内容容器样式 */
+        .content-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            margin-bottom: 80px;
+        }
+        
+        /* 主题卡片结构 - 包含双层矩形 */
+        .theme-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+        
+        /* 主题卡片悬停效果 */
+        .theme-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        /* 为主题卡片设置图片 */
+        .content-container .theme-card:nth-child(1) .lower-rect {
+            background-image: url('theme_preview/recircle.png');
+            background-size: cover;
+            background-position: center;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+            background-color: transparent;
+        }
+        
+        .content-container .theme-card:nth-child(2) .lower-rect {
+            background-image: url('theme_preview/fangbai.png');
+            background-size: cover;
+            background-position: center;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+            background-color: transparent;
+        }
+        
+        .content-container .theme-card:nth-child(3) .lower-rect {
+            background-image: url('theme_preview/yuanying.png');
+            background-size: cover;
+            background-position: center;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+            background-color: transparent;
+        }
+        
+        .content-container .theme-card:nth-child(4) .lower-rect {
+            background-image: url('theme_preview/yunqing.png');
+            background-size: cover;
+            background-position: center;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+            background-color: transparent;
+        }
+        
+        .content-container .theme-card:nth-child(5) .lower-rect {
+            background-image: url('theme_preview/recirclestar.png');
+            background-size: cover;
+            background-position: center;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+            background-color: transparent;
+        }
+        
+        .content-container .theme-card:nth-child(6) .lower-rect {
+            background-image: url('theme_preview/binfen.png');
+            background-size: cover;
+            background-position: center;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+            background-color: transparent;
+        }
+        
+        /* 双层矩形容器 */
+        .double-rect-container {
+            position: relative;
+            width: 220px;
+            height: 280px;
+        }
+        
+        /* 下层矩形 - 粉色（背景） */
+        .lower-rect {
+            background-color: #FFE4E1;
+            width: 220px;
+            height: 280px;
+            border-radius: 20px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+        
+        /* 主题卡片按钮样式 */
+        .theme-card-btn {
+            background-color: #FFC197;
+            color: white;
+            border: none;
+            padding: 15px 90px;
+            font-size: 22px;
+            border-radius: 20px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(255, 152, 0, 0.2);
+            white-space: nowrap;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: absolute;
+            bottom: 0;
+            z-index: 2;
+            font-weight: 500;
+        }
+        
+        /* 主题卡片按钮悬停效果 */
+        .theme-card-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 152, 0, 0.3);
+        }
+        
+        /* 主题卡片上层矩形悬停效果 */
+        .theme-card:hover .upper-rect {
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* 头像展示区域样式 */
+        .avatar-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .avatar-img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 4px solid #FFC197;
+            box-shadow: 0 8px 20px rgba(255, 152, 0, 0.3);
+            object-fit: cover;
+            transition: all 0.4s ease;
+        }
+        
+        .avatar-img:hover {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 12px 25px rgba(255, 152, 0, 0.5);
+        }
+
+        /* 图标包专区 */
+        .icon-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            margin-bottom: 80px;
+        }
+        
+        /* 手表/手环专区 */
+        .watch-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            margin-bottom: 80px;
+        }
+        
+        /* 图标卡片结构 */
+        .icon-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+        
+        /* 图标卡片悬停效果 */
+        .icon-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        /* 为图标卡片设置图片 */
+        .icon-container .icon-card:nth-child(1) .icon-lower-rect {
+            background-image: url('iconpack_preview/recicle.png'); 
+            background-size: cover;
+            background-position: center;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+            background-color: transparent;
+        }
+        
+        .icon-container .icon-card:nth-child(2) .icon-lower-rect {
+            background-image: url('iconpack_preview/circlestart.png'); 
+            background-size: cover;
+            background-position: center;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+            background-color: transparent;
+        }
+        
+        /* 手表卡片结构 */
+        .watch-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+        
+        /* 手表卡片悬停效果 */
+        .watch-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        /* 为手表卡片设置图片 */
+        .watch-container .watch-card:nth-child(1) .watch-card-lower-rect {
+            background-image: url('watch_preview/circle.png'); 
+            background-size: cover;
+            background-position: center;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+            background-color: transparent;
+        }
+
+        /* 社交图标样式 */
+        .my-icons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 10px;
+            margin-left: 60px;
+        }
+        
+        /* 社交图标悬停效果 */
+        .my-icons img:hover {
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 5px 15px rgba(255, 152, 0, 0.4);
+            border-radius: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: inline-block;
+        }
+        
+        /* 图标双层矩形容器 */
+        .icon-double-rect {
+            position: relative;
+            width: 280px;
+            height: 180px;
+        }
+        
+        /* 手表卡片双层矩形容器 */
+        .watch_card-double-rect {
+            position: relative;
+            width: 280px;
+            height: 180px;
+        }
+        
+        /* 图标下层矩形 */
+        .icon-lower-rect {
+            background-color: #FFE4E1;
+            width: 280px;
+            height: 180px;
+            border-radius: 20px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+        
+        /* 手表卡片下层矩形 */
+        .watch-card-lower-rect {
+            background-color: #FFE4E1;
+            width: 280px;
+            height: 180px;
+            border-radius: 20px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+        
+        /* 图标卡片按钮样式 */
+        .icon-card-btn {
+            width: 280px;
+            padding: 15px 90px;
+            text-align: center;
+            background-color: #FFC197;
+            color: white;
+            border: none;
+            font-size: 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(255, 152, 0, 0.2);
+            white-space: nowrap;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: absolute;
+            bottom: 0;
+            z-index: 2;
+            font-weight: 500;
+        }
+        
+        /* 手表卡片按钮样式 */
+        .watch-card-btn {
+            width: 280px;
+            padding: 15px 90px;
+            text-align: center;
+            background-color: #FFC197;
+            color: white;
+            border: none;
+            font-size: 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(255, 152, 0, 0.2);
+            white-space: nowrap;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: absolute;
+            bottom: 0;
+            z-index: 2;
+            font-weight: 500;
+        }
+        
+        /* 图标卡片按钮悬停效果 */
+        .icon-card-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 152, 0, 0.3);
+        }
+        
+        /* 手表卡片按钮悬停效果 */
+        .watch-card-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 152, 0, 0.3);
+        }
+        
+        /* 手表卡片上层矩形 */
+        .watch-card-upper-rect {
+            width: 200px;
+            height: 260px;
+            border-radius: 18px;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 2;
+            transition: box-shadow 0.3s ease;
+        }
+        
+        /* 图标上层矩形 */
+        .icon-upper-rect {
+            width: 260px;
+            height: 160px;
+            border-radius: 18px;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 2;
+            transition: box-shadow 0.3s ease;
+        }
+        
+        /* 图标上层矩形悬停效果 */
+        .icon-card:hover .icon-upper-rect {
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* 弹窗背景层 */
+        .modal {
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        
+        /* 弹窗内容 */
+        .modal-content {
+            background-color: #FFC197;
+            color: white;
+            margin: 15% auto;
+            padding: 30px;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 30px;
+            text-align: center;
+            position: relative;
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+        }
+        
+        /* 弹窗显示时的样式 */
+        .modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* 弹窗显示时内容的样式 */
+        .modal.show .modal-content {
+            transform: scale(1);
+        }
+        
+        /* 弹窗标题 */
+        .modal-title {
+            font-size: 36px;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+        
+        /* 弹窗按钮容器 */
+        .modal-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        /* 弹窗按钮 */
+        .modal-btn {
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #FFC197;
+            border: none;
+            padding: 12px 24px;
+            font-size: 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            font-weight: 500;
+        }
+        
+        /* 弹窗按钮悬停效果 */
+        .modal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 152, 0, 0.3);
+        }
+        
+        /* 关闭按钮 */
+        .close {
+            color: white;
+            position: absolute;
+            right: 20px;
+            top: 15px;
+            font-size: 30px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        /* 关闭按钮悬停效果 */
+        .close:hover {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 头像展示区域 -->
+    <div class="avatar-container">
+        <img src="https://cdn.lightxi.com/cloudreve/uploads/2025/12/25/w2XJIxKb_happy_jelly.png" alt="果冻主题作者头像" class="avatar-img">
+    </div>
+    
+    <div class="title">这里是果冻!</div>
+    
+    <button class="theme-btn">主题专区</button>
+    
+    <div class="content-container">
+        <!-- 主题卡片1 -->
+        <div class="theme-card">
+            <div class="double-rect-container">
+                <div class="lower-rect" alt="重圆主题预览图"></div>
+                <div class="upper-rect"></div>
+            </div>
+            <button class="theme-card-btn" data-theme="recircle">重圆</button>
+        </div>
+        
+        <!-- 主题卡片2 -->
+        <div class="theme-card">
+            <div class="double-rect-container">
+                <div class="lower-rect" alt="方白主题预览图"></div>
+                <div class="upper-rect"></div>
+            </div>
+            <button class="theme-card-btn" data-theme="fangbai">方白</button>
+        </div>
+        
+        <!-- 主题卡片3 -->
+        <div class="theme-card">
+            <div class="double-rect-container">
+                <div class="lower-rect" alt="远影主题预览图"></div>
+                <div class="upper-rect"></div>
+            </div>
+            <button class="theme-card-btn" data-theme="yuanying">远影</button>
+        </div>
+        
+        <!-- 主题卡片4 -->
+        <div class="theme-card">
+            <div class="double-rect-container">
+                <div class="lower-rect" alt="云轻主题预览图"></div>
+                <div class="upper-rect"></div>
+            </div>
+            <button class="theme-card-btn" data-theme="yunqing">云轻</button>
+        </div>
+        
+        <!-- 主题卡片5 -->
+        <div class="theme-card">
+            <div class="double-rect-container">
+                <div class="lower-rect" alt="圆启主题预览图"></div>
+                <div class="upper-rect"></div>
+            </div>
+            <button class="theme-card-btn" data-theme="yuanqi">圆启</button>
+        </div>
+        
+        <!-- 主题卡片6 -->
+        <div class="theme-card">
+            <div class="double-rect-container">
+                <div class="lower-rect" alt="缤纷主题预览图"></div>
+                <div class="upper-rect"></div>
+            </div>
+            <button class="theme-card-btn" data-theme="binfen">缤纷</button>
+        </div>
+    </div>
+    
+    <button class="theme-btn">图标包专区</button>
+    
+    <div class="icon-container">
+        <!-- 图标包卡片1 -->
+        <div class="icon-card">
+            <div class="icon-double-rect">
+                <div class="icon-lower-rect" alt="重圆图标包预览图"></div>
+                <div class="icon-upper-rect"></div>
+            </div>
+            <button class="icon-card-btn" data-iconpack="recircle">重圆图标包</button>
+        </div>
+        
+        <!-- 图标包卡片2 -->
+        <div class="icon-card">
+            <div class="icon-double-rect">
+                <div class="icon-lower-rect" alt="圆启图标包预览图"></div>
+                <div class="icon-upper-rect"></div>
+            </div>
+            <button class="icon-card-btn" data-iconpack="yuanqi">圆启图标包</button>
+        </div>
+    </div>
+    
+    <button class="theme-btn">手表/手环专区</button>
+    
+    <div class="watch-container">
+        <!-- 手表表盘卡片 -->
+        <div class="watch-card">
+            <div class="watch_card-double-rect">
+                <div class="watch-card-lower-rect" alt="重圆表盘预览图"></div>
+                <div class="watch-card-upper-rect"></div>
+            </div>
+            <button class="watch-card-btn" data-watchface="recircle">重圆表盘</button>
+        </div>
+    </div>
+    
+    <div class="small-fonts">果冻在这里</div>
+    
+    <div class="my-icons">
+        <a href="https://qun.qq.com/universal-share/share?ac=1&authKey=1uMXyEghufXVC%2Fec1cuWghYSzsLi8GhYHN9o5YKVzGLjO0dfEhZUjprPGvd4UheT&busi_data=eyJncm91cENvZGUiOiI4MTg1MjU4MDYiLCJ0b2tlbiI6InMrQysxdnUwRzFreGprSTVNM1VsdGh4aGVvSGxEcW1QbHUwa2NmOWMxWGE1aUxYbnB1T2NJVTVCSDFFZGhpVTIiLCJ1aW4iOiIzMjYwNTgyOTA1In0%3D&data=RclHInyfHu2twSFFZeDvpm4AR-swjlowCoxugVywfMp7APnsi3-OPNV_v80BFo3YfeZ9Q6UozIyq0CLoyUsa0g&svctype=4&tempid=h5_group_info" target="_blank">
+            <img src="icons/QQ.svg" alt="QQ" style="position: static;  top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 3; width: 60px; height: 60px;">
+        </a>
+        <a href="http://www.coolapk.com/u/1032987" target="_blank">
+            <img src="icons/CoolAPK.svg" alt="酷安" style="position: static;  top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 3; width: 60px; height: 60px;">
+        </a>
+        <a href="https://b23.tv/9lFyAqe" target="_blank">
+            <img src="icons/Bilibili.svg" alt="哔哩哔哩" style="position: static;  top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 3; width: 60px; height: 60px;">
+        </a>
+        <a href="https://xhslink.com/m/7Sy6eAHvTgW" target="_blank">
+            <img src="icons/xhs.svg" alt="小红书" style="position: static;  top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 3; width: 60px; height: 60px;">
+        </a>
+        <a href="https://afdian.com/a/Ajellybeans" target="_blank">
+            <img src="icons/aifadian.svg" alt="爱发电" style="position: static;  top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 3; width: 60px; height: 60px;">
+        </a>
+    </div>
+    
+    <!-- 主题选择弹窗 -->
+    <div id="themeModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 class="modal-title"></h2>
+            <div class="modal-buttons">
+                <button class="modal-btn" data-brand="xiaomi">小米主题</button>
+                <button class="modal-btn" data-brand="oppo">OPPO主题</button>
+                <button class="modal-btn" data-brand="vivo">vivo主题</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 获取弹窗元素
+        var modal = document.getElementById("themeModal");
+        var closeBtn = document.getElementsByClassName("close")[0];
+        var themeBtns = document.getElementsByClassName("theme-card-btn");
+        var modalTitle = document.querySelector(".modal-title");
+
+        // 显示弹窗的函数
+        function showModal() {
+            modal.classList.add("show");
+        }
+
+        // 隐藏弹窗的函数
+        function hideModal() {
+            modal.classList.remove("show");
+        }
+
+        // 为每个主题卡片按钮添加点击事件
+        for (var i = 0; i < themeBtns.length; i++) {
+            themeBtns[i].onclick = function() {
+                // 设置弹窗标题为按钮文本
+                modalTitle.textContent = this.textContent + "主题";
+                // 记录当前主题
+                modal.dataset.currentTheme = this.getAttribute("data-theme");
+                // 显示弹窗
+                showModal();
+            };
+        }
+
+        // 点击关闭按钮隐藏弹窗
+        closeBtn.onclick = function() {
+            hideModal();
+        };
+
+        // 点击弹窗外部区域隐藏弹窗
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                hideModal();
+            }
+        };
+
+        // 为弹窗内的品牌按钮添加点击事件
+        var modalBtns = document.getElementsByClassName("modal-btn");
+        for (var i = 0; i < modalBtns.length; i++) {
+            modalBtns[i].onclick = function() {
+                var brand = this.getAttribute("data-brand");
+                var themeName = modalTitle.textContent.replace("主题", "");
+                var currentTheme = modal.dataset.currentTheme;
+                
+                // 主题-品牌与网址映射表
+                var themeBrandUrls = {
+                    "recircle": {
+                        "xiaomi": "https://zhuti.xiaomi.com/detail/share/0b86fedc-4c8e-43a1-a13f-2c028ef677a2?miref=share&packId=98ba96a4-1bfb-415e-8902-fe4773799674",
+                        "oppo": "https://theme-h5-static.heytap.com/sp/theme/storeStatic/themeDetailShare/themedetail/index.html?masterId=4228915&region=CN&type=0",
+                        "vivo": "https://ai-h5.vivo.com.cn/itheme-share-detail/index.html?themetype=1&resId=100222115&baiduInputVersion=8.5.204.983"
+                    },
+                    "fangbai": {
+                        "xiaomi": "https://zhuti.xiaomi.com/detail/share/9c937a4a-3f53-4314-90fc-4289584d45ca?miref=share&packId=0799e1ca-8a76-4dc1-9aec-ca5e2b51e9d2",
+                        "oppo": "https://theme-h5-static.heytap.com/sp/theme/storeStatic/themeDetailShare/themedetail/index.html?masterId=4958339&region=CN&type=0"
+                    },
+                    "yuanying": {
+                        "xiaomi": "https://zhuti.xiaomi.com/detail/share/8e517b66-ce12-48a8-9135-5797f51d1a4d?miref=share&packId=adf5cc3e-c63e-4d09-b0e9-39b6c9a7fba9",
+                        "oppo": "https://theme-h5-static.heytap.com/sp/theme/storeStatic/themeDetailShare/themedetail/index.html?masterId=6992873&region=CN&type=0"
+                    },
+                    "yunqing": {
+                        "xiaomi": "https://zhuti.xiaomi.com/detail/share/1726a7c1-9ef3-433a-ba3f-8d0566ed68a1?miref=share&packId=0e43dc87-8a59-4439-8074-0738ddc357e0",
+                        "oppo": "https://theme-h5-static.heytap.com/sp/theme/storeStatic/themeDetailShare/themedetail/index.html?masterId=5760187&region=CN&type=0"
+                    },
+                    "yuanqi": {
+                        "xiaomi": "https://zhuti.xiaomi.com/detail/share/29452b9a-e931-454d-ac15-e33d1f6e32e8?miref=share&packId=f591f58d-05b4-4cb8-80d1-351524f68cee",
+                        "oppo": "https://theme-h5-static.heytap.com/sp/theme/storeStatic/themeDetailShare/themedetail/index.html?masterId=11033449&region=CN&type=0"
+                    },
+                    "binfen": {
+                        "xiaomi": "https://zhuti.xiaomi.com/detail/share/9fcf4a91-ec62-4a99-86e3-26c71871074d?miref=share&packId=50c8a643-ee41-4bb9-90d9-03aa80bf79dc",
+                        "oppo": "https://theme-h5-static.heytap.com/sp/theme/storeStatic/themeDetailShare/themedetail/index.html?masterId=6739549&region=CN&type=0"
+                    }
+                };
+                
+                // 获取对应的主题-品牌网址
+                var url = themeBrandUrls[currentTheme] && themeBrandUrls[currentTheme][brand];
+                
+                if (url) {
+                    alert("正在跳转到" + themeName + " - " + this.textContent + "下载页面");
+                    // 在新窗口打开对应的品牌主题商店
+                    window.open(url, "_blank");
+                } else {
+                    alert("暂未上架，敬请期待！");
+                }
+                
+                // 关闭弹窗
+                hideModal();
+            };
+        }
+
+        // 为图标包按钮添加点击事件
+        var iconPackBtns = document.getElementsByClassName("icon-card-btn");
+        for (var i = 0; i < iconPackBtns.length; i++) {
+            iconPackBtns[i].onclick = function() {
+                var iconPackName = this.textContent;
+                var iconPack = this.getAttribute("data-iconpack");
+                
+                // 图标包与网址映射表
+                var iconPackUrls = {
+                    "recircle": "https://afdian.com/item/da336be6c64811ee96b95254001e7c00", // 重圆图标包的跳转链接
+                    "yuanqi": "https://afdian.com/item/f7d3152ec28c11f08b7e5254001e7c00"     // 圆启图标包的跳转链接
+                };
+                
+                // 获取对应的图标包网址
+                var url = iconPackUrls[iconPack];
+                
+                if (url) {
+                    // 直接在新窗口打开对应的图标包页面
+                    window.open(url, "_blank");
+                }
+            };
+        }
+
+        // 为表盘按钮添加点击事件
+        var watchFaceBtns = document.getElementsByClassName("watch-card-btn");
+        for (var i = 0; i < watchFaceBtns.length; i++) {
+            watchFaceBtns[i].onclick = function() {
+                var watchFaceName = this.textContent;
+                var watchFace = this.getAttribute("data-watchface");
+                
+                // 图标包与网址映射表
+                var watchFaceUrls = {
+                    "recircle": "https://www.bandbbs.cn/resources/3368/" // 重圆图标包的跳转链接
+                };
+                
+                // 获取对应的图标包网址
+                var url = watchFaceUrls[watchFace];
+                
+                if (url) {
+                    // 直接在新窗口打开对应的图标包页面
+                    window.open(url, "_blank");
+                }
+            };
+        }
+
+        // 点击头像切换图片效果
+        var avatar = document.querySelector('.avatar-img');
+        var avatarImages = [
+            'https://cdn.lightxi.com/cloudreve/uploads/2025/12/25/w2XJIxKb_happy_jelly.png',
+            'https://cdn.lightxi.com/cloudreve/uploads/2025/12/25/VDQyfLBP_unhappy_jelly.png',
+            'https://cdn.lightxi.com/cloudreve/uploads/2025/12/25/ArYswWtq_cute_jelly.png'
+        ];
+        var currentIndex = 0;
+        
+        avatar.addEventListener('click', function() {
+            // 切换到下一张图片
+            currentIndex = (currentIndex + 1) % avatarImages.length;
+            // 应用新图片
+            avatar.src = avatarImages[currentIndex];
+            // 添加点击动画效果
+            avatar.style.transform = 'scale(0.95)';
+            setTimeout(function() {
+                avatar.style.transform = 'scale(1)';
+            }, 200);
+        });
+    </script>
+</body>
+</html>
