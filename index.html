@@ -458,15 +458,19 @@
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.3s ease, visibility 0.3s ease;
+            /* 添加Flexbox属性，使弹窗内容居中 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px; /* 添加内边距，防止弹窗在小屏幕上边缘溢出 */
         }
         
         /* 弹窗内容 */
         .modal-content {
             background-color: #FFC197;
             color: white;
-            margin: 15% auto;
             padding: 30px;
-            width: 80%;
+            width: 100%;
             max-width: 500px;
             border-radius: 30px;
             text-align: center;
@@ -536,10 +540,29 @@
             opacity: 0.8;
         }
         @media (max-width: 480px) {
-        .theme-card-btn {
-            padding: 15px 90px; /* 更小屏幕下的padding */
-            font-size: 20px;
-         }
+    .modal-content {
+        padding: 20px; /* 移动端减少内边距 */
+        width: 90%; /* 移动端增加宽度占比 */
+    }
+    
+    .modal-title {
+        font-size: 28px; /* 移动端减小标题字体 */
+        margin-bottom: 20px; /* 移动端减少标题下方间距 */
+    }
+    
+    .modal-buttons {
+        gap: 15px; /* 移动端减小按钮间距 */
+    }
+    
+    .modal-btn {
+        padding: 10px 20px; /* 移动端减小按钮内边距 */
+        font-size: 18px; /* 移动端减小按钮字体 */
+    }
+    
+    .theme-card-btn {
+        padding: 15px 90px; /* 更小屏幕下的padding */
+        font-size: 20px;
+     }
 }
     </style>
 </head>
