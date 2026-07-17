@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>果冻设计 - 后台管理</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, 'MiSans', sans-serif; }
+        body { background: #f5f5f5; min-height: 100vh; display: flex; }
+        /* 登录页 */
+        .login-screen {
+            position: fixed; z-index: 999; inset: 0; background: #f5f5f5;
+            display: flex; align-items: center; justify-content: center;
+            flex-direction: column; gap: 24px;
+        }
+        .login-screen.hidden { display: none; }
+        .login-box {
+            background: #fff; border-radius: 20px; padding: 36px 32px 32px;
+            max-width: 340px; width: 100%; text-align: center;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.04);
+        }
+        .login-box h2 { font-size: 20px; font-weight: 700; color: #1a1a2e; margin-bottom: 4px; }
+        .login-box p { font-size: 13px; color: #999; margin-bottom: 24px; }
+        .login-box input {
+            width: 100%; padding: 10px 14px; border: 1px solid #eee; border-radius: 12px;
+            font-size: 15px; color: #333; outline: none; text-align: center;
+            transition: border-color 0.2s; margin-bottom: 14px;
+        }
+        .login-box input:focus { border-color: #1a1a2e; }
+        .login-box button {
+            width: 100%; padding: 10px 0; border: none; border-radius: 12px;
+            background: #1a1a2e; color: #fff; font-size: 15px; font-weight: 600;
+            cursor: pointer; transition: all 0.25s;
+        }
+        .login-box button:hover { background: #2c2c4a; }
+        .login-box .error { font-size: 12px; color: #dc2626; margin-bottom: 10px; min-height: 18px; }
+
+        /* 侧边栏 */
+                                .sidebar {
+                                    width: 220px; min-height: 100vh; background: #fff;
+                                    border-right: 1px solid #eee; padding: 24px 16px;
+                    display: flex; flex-direction: column; position: fixed; left: 0; top: 0; z-index: 10;
+                }
+                .sidebar .nav-item:first-child { margin-top: 0; }
+        .sidebar .nav-item {
+            display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px;
+            font-size: 14px; font-weight: 500; color: #666; cursor: pointer; transition: all 0.2s;
+            border: none; background: none; text-align: left; width: 100%; margin-bottom: 2px;
+        }
+        .sidebar .nav-item:hover { background: #f0f0f0; color: #333; }
+        .sidebar .nav-item.active { background: #1a1a2e; color: #fff; }
+        .sidebar .back-link {
+            margin-top: auto; display: flex; align-items: center; gap: 8px;
+            padding: 10px 12px; border-radius: 10px; font-size: 13px; color: #999;
+            text-decoration: none; transition: all 0.2s;
+        }
+                .sidebar .back-link:hover { background: #f0f0f0; color: #666; }
+
+        /* 主内容 */
+        .main-content { margin-left: 120px; flex: 1; padding: 32px 32px 32px 20px; min-height: 100vh; }
+
+        .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+        .topbar h1 { font-size: 22px; font-weight: 700; color: #1a1a2e; }
+
+
+        /* 提示 */
+        .toast {
+            position: fixed; top: 20px; right: 20px; z-index: 999;
+            background: #1a1a2e; color: #fff; padding: 12px 24px; border-radius: 12px;
+            font-size: 14px; opacity: 0; transform: translateY(-12px);
+            transition: all 0.35s cubic-bezier(0.23,1,0.32,1); pointer-events: none;
+        }
+        .toast.show { opacity: 1; transform: translateY(0); }
+
+        /* 每个分类面板 */
+        .panel { display: none; }
+        .panel.active { display: block; }
+
+        .panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+        .panel-header h3 { font-size: 16px; font-weight: 600; color: #1a1a2e; }
+        .panel-header .add-btn {
+            padding: 6px 16px; border: none; border-radius: 8px; background: #f0f0f0; color: #333;
+            font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s;
+        }
+        .panel-header .add-btn:hover { background: #1a1a2e; color: #fff; }
+
+        /* 管理卡片网格 */
+        .item-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
+
+        .manage-card {
+            background: #fff; border-radius: 14px; border: 1px solid #eee; overflow: hidden;
+            display: flex; align-items: stretch; transition: all 0.25s;
+        }
+        .manage-card:hover { border-color: #ddd; box-shadow: 0 4px 16px rgba(0,0,0,0.04); }
+
+        .manage-card .preview {
+            width: 100px; min-height: 100px; flex-shrink: 0;
+            background-size: cover; background-position: center; background-color: #f5f5f5;
+        }
+        .manage-card .preview.wide { width: 120px; }
+
+        .manage-card .info {
+            flex: 1; padding: 14px 16px; display: flex; flex-direction: column; justify-content: center;
+        }
+        .manage-card .info .name {
+            font-size: 15px; font-weight: 600; color: #1a1a2e; margin-bottom: 4px;
+        }
+        .manage-card .info .id-text {
+            font-size: 12px; color: #bbb; margin-bottom: 8px;
+        }
+        .manage-card .info .links {
+            display: flex; flex-wrap: wrap; gap: 4px;
+        }
+        .manage-card .info .links .tag {
+            font-size: 11px; padding: 2px 8px; border-radius: 6px; background: #f5f5f5; color: #999;
+        }
+        .manage-card .info .links .tag.has-link { background: #eef2ff; color: #667eea; }
+
+        .manage-card .actions {
+            display: flex; flex-direction: column; justify-content: center; gap: 4px;
+            padding: 14px 12px 14px 0;
+        }
+        .manage-card .actions button {
+            padding: 4px 12px; border: none; border-radius: 6px; font-size: 12px; cursor: pointer;
+            transition: all 0.2s; background: #f5f5f5; color: #666;
+        }
+        .manage-card .actions button:hover { background: #e8e8e8; }
+        .manage-card .actions .delete-btn:hover { background: #fee2e2; color: #dc2626; }
+
+        /* 弹窗 */
+        .modal {
+            position: fixed; z-index: 200; inset: 0; display: flex; align-items: center; justify-content: center;
+            padding: 20px; background: rgba(0,0,0,0.15); backdrop-filter: blur(6px);
+            opacity: 0; visibility: hidden; transition: opacity 0.25s, visibility 0.25s;
+        }
+        .modal.show { opacity: 1; visibility: visible; }
+
+        .modal-box {
+            background: #fff; border-radius: 20px; padding: 28px 24px 24px;
+            max-width: 440px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+            transform: scale(0.92) translateY(12px); transition: transform 0.3s cubic-bezier(0.23,1,0.32,1);
+        }
+        .modal.show .modal-box { transform: scale(1) translateY(0); }
+
+        .modal-box h3 { font-size: 18px; font-weight: 700; color: #1a1a2e; margin-bottom: 20px; }
+
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 500; color: #666; margin-bottom: 4px; }
+        .form-group input, .form-group select {
+            width: 100%; padding: 8px 12px; border: 1px solid #eee; border-radius: 10px;
+            font-size: 14px; color: #333; outline: none; transition: border-color 0.2s;
+        }
+        .form-group input:focus { border-color: #1a1a2e; }
+        .form-group .helper { font-size: 11px; color: #bbb; margin-top: 2px; }
+
+        .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
+        .modal-actions button {
+            padding: 8px 20px; border: none; border-radius: 10px; font-size: 14px; font-weight: 500;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .modal-actions .cancel-btn { background: #f5f5f5; color: #666; }
+        .modal-actions .cancel-btn:hover { background: #e8e8e8; }
+        .modal-actions .confirm-btn { background: #1a1a2e; color: #fff; }
+        .modal-actions .confirm-btn:hover { background: #2c2c4a; }
+
+
+
+        @media (max-width: 860px) {
+                    .sidebar { width: 200px; padding: 20px 12px; }
+                    .main-content { margin-left: 200px; padding: 24px 16px 24px 12px; }
+                }
+
+        @media (max-width: 640px) {
+            .mobile-nav {
+                display: flex !important;
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                z-index: 60;
+                flex-direction: row;
+                padding: 4px;
+                gap: 0;
+                background: rgba(255,255,255,0.65);
+                backdrop-filter: blur(24px) saturate(180%);
+                -webkit-backdrop-filter: blur(24px) saturate(180%);
+                border: 1px solid rgba(0,0,0,0.06);
+                border-radius: 999px;
+                box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+                width: auto;
+                min-width: 280px;
+            }
+            .mobile-nav .nav-item {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 14px;
+                padding: 10px 0;
+                flex: 1;
+                border-radius: 999px;
+                border: none;
+                background: transparent;
+                color: #666;
+                font-weight: 500;
+                cursor: pointer;
+                position: relative;
+                z-index: 1;
+                transition: all 0.2s;
+            }
+            .mobile-nav .nav-item.active { color: #fff; background: transparent; }
+            .mobile-nav .nav-slider {
+                position: absolute;
+                top: 4px;
+                bottom: 4px;
+                border-radius: 999px;
+                background: #1a1a2e;
+                z-index: 0;
+                transition: left 0.3s cubic-bezier(0.23,1,0.32,1), width 0.3s cubic-bezier(0.23,1,0.32,1);
+            }
+
+            body { flex-direction: column; }
+            .sidebar {
+                width: 100%;
+                min-height: auto;
+                position: static;
+                flex-direction: column;
+                padding: 8px 14px;
+                border-right: none;
+                border-bottom: none;
+                align-items: center;
+            }
+            .sidebar .nav-item { display: none; }
+            .sidebar .back-link { display: none; }
+
+            .main-content {
+                margin-left: 0;
+                padding: 16px 14px 80px;
+            }
+
+            .topbar {
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 10px;
+                margin-bottom: 16px;
+            }
+            .topbar h1 { font-size: 18px; text-align: center; }
+            .topbar .save-btn {
+                padding: 6px 16px;
+                font-size: 13px;
+                white-space: nowrap;
+            }
+
+            .panel-header {
+                margin-bottom: 14px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+            .panel-header h3 { font-size: 14px; margin: 0; }
+            .panel-header .add-btn {
+                padding: 4px 12px;
+                font-size: 12px;
+                border-radius: 8px;
+            }
+
+            .item-grid {
+                grid-template-columns: 1fr !important;
+                gap: 12px;
+            }
+            .manage-card { border-radius: 12px; }
+            .manage-card .preview { width: 80px; min-height: 80px; }
+            .manage-card .preview.wide { width: 80px; }
+            .manage-card .info { padding: 10px 12px; }
+            .manage-card .info .name { font-size: 14px; }
+            .manage-card .info .id-text { font-size: 11px; }
+            .manage-card .actions { padding: 10px 8px 10px 0; }
+            .manage-card .actions button { padding: 3px 10px; font-size: 11px; }
+
+            .modal-box { padding: 24px 20px; max-width: 340px; }
+            .modal-box h3 { font-size: 16px; margin-bottom: 16px; }
+            .form-group { margin-bottom: 10px; }
+            .form-group label { font-size: 12px; }
+            .form-group input { padding: 7px 10px; font-size: 13px; border-radius: 8px; }
+            .modal-actions { margin-top: 16px; }
+            .modal-actions button { padding: 7px 16px; font-size: 13px; border-radius: 8px; }
+
+            .login-box { padding: 28px 24px 24px; max-width: 300px; }
+            .login-box h2 { font-size: 18px; }
+            .login-box input { padding: 8px 12px; font-size: 14px; }
+            .login-box button { padding: 8px 0; font-size: 14px; }
+        }    </style>
+</head>
+<body>
+<!-- 登录层 -->
+<div class="login-screen" id="loginScreen">
+    <div class="login-box">
+        <h2>管理后台</h2>
+        <p>请输入密码以继续</p>
+        <div class="error" id="loginError"></div>
+        <input type="password" id="passwordInput" placeholder="输入密码" autocomplete="off">
+        <button onclick="checkPassword()">进入后台</button>
+    </div>
+</div>
+
+
+<!-- 侧边栏 -->
+<aside class="sidebar">
+    <button class="nav-item active" data-panel="themePanel">主题管理</button>
+    <button class="nav-item" data-panel="iconPanel">图标包管理</button>
+    <button class="nav-item" data-panel="watchPanel">手表管理</button>
+    <a class="back-link" href="index.html">← 返回前台</a>
+</aside>
+
+    <!-- 手机端悬浮底栏 -->
+    <div class="mobile-nav" id="mobileNav">
+        <div class="nav-slider" id="navSlider"></div>
+        <button class="nav-item active" data-panel="themePanel">主题</button>
+        <button class="nav-item" data-panel="iconPanel">图标包</button>
+        <button class="nav-item" data-panel="watchPanel">手表</button>
+    </div>
+
+<!-- 主内容 -->
+<main class="main-content">
+    <div class="topbar">
+        <h1 id="panelTitle">主题管理</h1>
+        <button class="save-btn" onclick="saveDataToFile()" style="padding:8px 20px;border:none;border-radius:10px;background:#1a1a2e;color:#fff;font-size:14px;font-weight:500;cursor:pointer;transition:all 0.2s;">💾 保存到 data.json</button>
+    </div>
+
+    <!-- 主题面板 -->
+    <div class="panel active" id="themePanel">
+        <div class="panel-header">
+            <h3>主题列表</h3>
+            <button class="add-btn" onclick="openAddModal('theme')">+ 添加主题</button>
+        </div>
+        <div class="item-grid" id="themeGrid"></div>
+    </div>
+
+    <!-- 图标包面板 -->
+    <div class="panel" id="iconPanel">
+        <div class="panel-header">
+            <h3>图标包列表</h3>
+            <button class="add-btn" onclick="openAddModal('icon')">+ 添加图标包</button>
+        </div>
+        <div class="item-grid" id="iconGrid"></div>
+    </div>
+
+    <!-- 手表面板 -->
+    <div class="panel" id="watchPanel">
+        <div class="panel-header">
+            <h3>手表列表</h3>
+            <button class="add-btn" onclick="openAddModal('watch')">+ 添加手表</button>
+        </div>
+        <div class="item-grid" id="watchGrid"></div>
+    </div>
+
+</main>
+
+<!-- 提示 -->
+<div class="toast" id="toast"></div>
+
+<!-- 编辑弹窗 -->
+<div class="modal" id="editModal">
+    <div class="modal-box">
+        <h3 id="modalTitle">编辑</h3>
+        <div class="form-group">
+            <label>ID（唯一标识，如 recircle）</label>
+            <input id="editId" placeholder="英文id，用于链接匹配">
+        </div>
+        <div class="form-group">
+            <label>名称</label>
+            <input id="editName" placeholder="显示的名称">
+        </div>
+        <div class="form-group">
+            <label>缩略图路径</label>
+            <input id="editImg" placeholder="如 theme_preview/recircle.webp">
+            <div class="helper">存放在对应分类的预览文件夹中</div>
+        </div>
+        <div id="brandFields">
+            <div class="form-group"><label>小米链接</label><input id="editXiaomi" placeholder="可选"></div>
+            <div class="form-group"><label>OPPO 链接</label><input id="editOppo" placeholder="可选"></div>
+            <div class="form-group"><label>vivo 链接</label><input id="editVivo" placeholder="可选"></div>
+        </div>
+        <div class="form-group" id="singleLinkGroup" style="display:none">
+            <label>跳转链接</label>
+            <input id="editLink" placeholder="外部链接地址">
+        </div>
+        <div class="modal-actions">
+            <button class="cancel-btn" onclick="closeEditModal()">取消</button>
+            <button class="confirm-btn" onclick="saveEdit()">保存</button>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    var ENCODED_PASSWORD = 'QEh3cTU3NTcxNjk5NTE1MQ==';
+  
+    function checkPassword() {
+        var input = document.getElementById('passwordInput');
+        var error = document.getElementById('loginError');
+        if (btoa(input.value) === ENCODED_PASSWORD) {
+            document.getElementById('loginScreen').classList.add('hidden');
+            input.value = '';
+        } else {
+            error.textContent = '密码错误，请重试';
+            input.value = '';
+            setTimeout(function() { error.textContent = ''; }, 2000);
+        }
+    }
+  
+    document.getElementById('passwordInput').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') checkPassword();
+    });
+  
+    // ===== 从 data.json 加载数据 =====
+    var data = { theme: [], icon: [], watch: [] };
+
+    function loadData() {
+        fetch('data.json?_=' + Date.now())
+            .then(function(res) { return res.json(); })
+            .then(function(json) {
+                data = json;
+                renderAll();
+                setTimeout(function() { updateMobileSlider(); }, 100);
+            })
+            .catch(function(err) {
+                console.error('加载 data.json 失败', err);
+                showToast('数据加载失败，请检查 data.json 是否存在');
+            });
+    }
+
+    // ===== 保存数据到 data.json =====
+    function saveDataToFile() {
+        var jsonStr = JSON.stringify(data, null, 2);
+        // 使用 Blob 创建下载链接，覆盖 data.json
+        var blob = new Blob([jsonStr], { type: 'application/json' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'data.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('✅ data.json 已下载，请替换原文件后提交到 GitHub');
+    }
+
+    var currentType = 'theme';
+    var editingId = null;
+
+    function updateMobileSlider() {
+        var nav = document.getElementById('mobileNav');
+        if (!nav) return;
+        var slider = nav.querySelector('.nav-slider');
+        var active = nav.querySelector('.nav-item.active');
+        if (!slider || !active) return;
+        slider.style.left = active.offsetLeft + 'px';
+        slider.style.width = active.offsetWidth + 'px';
+    }
+
+    function switchPanel(btn) {
+        var target = btn.dataset.panel;
+        document.querySelectorAll('.nav-item').forEach(function(item) {
+            item.classList.remove('active');
+        });
+        document.querySelectorAll('.nav-item[data-panel="' + target + '"]').forEach(function(item) {
+            item.classList.add('active');
+        });
+        document.querySelectorAll('.panel').forEach(function(p) { p.classList.remove('active'); });
+        document.getElementById(target).classList.add('active');
+        var titleMap = { themePanel:'主题管理', iconPanel:'图标包管理', watchPanel:'手表管理' };
+        document.getElementById('panelTitle').textContent = titleMap[target];
+        currentType = target.replace('Panel', '');
+        updateMobileSlider();
+    }
+
+    // ===== 渲染 =====
+    function renderAll() {
+        renderGrid('theme', 'themeGrid', false);
+        renderGrid('icon', 'iconGrid', true);
+        renderGrid('watch', 'watchGrid', true);
+    }
+
+    function renderGrid(type, gridId, wide) {
+        var grid = document.getElementById(gridId);
+        var items = data[type];
+        var html = '';
+        for (var i = 0; i < items.length; i++) {
+            var item = items[i];
+            var linkTags = '';
+            if (type === 'theme') {
+                linkTags = '<span class="tag' + (item.xiaomi ? ' has-link' : '') + '">小米</span>' +
+                           '<span class="tag' + (item.oppo ? ' has-link' : '') + '">OPPO</span>' +
+                           '<span class="tag' + (item.vivo ? ' has-link' : '') + '">vivo</span>';
+            } else {
+                linkTags = '<span class="tag' + (item.link ? ' has-link' : '') + '">链接</span>';
+            }
+            html += '<div class="manage-card">' +
+                        '<div class="preview' + (wide ? ' wide' : '') + '" style="background-image:url(' + item.img + ')"></div>' +
+                        '<div class="info">' +
+                            '<div class="name">' + item.name + '</div>' +
+                            '<div class="id-text">ID: ' + item.id + '</div>' +
+                            '<div class="links">' + linkTags + '</div>' +
+                        '</div>' +
+                        '<div class="actions">' +
+                            '<button onclick="openEditModal(\'' + type + '\',\'' + item.id + '\')">编辑</button>' +
+                            '<button class="delete-btn" onclick="deleteItem(\'' + type + '\',\'' + item.id + '\')">删除</button>' +
+                        '</div>' +
+                    '</div>';
+        }
+        grid.innerHTML = html;
+    }
+
+    // ===== 导航切换 =====
+    var navItems = document.querySelectorAll('.nav-item');
+    for (var i = 0; i < navItems.length; i++) {
+        navItems[i].addEventListener('click', function() {
+            switchPanel(this);
+            currentType = this.dataset.panel.replace('Panel', '');
+        });
+    }
+
+    // ===== 编辑弹窗 =====
+    function openEditModal(type, id) {
+        currentType = type;
+        editingId = id;
+        var items = data[type];
+        var item = null;
+        for (var i = 0; i < items.length; i++) {
+            if (items[i].id === id) { item = items[i]; break; }
+        }
+        if (!item) return;
+
+        document.getElementById('modalTitle').textContent = '编辑 - ' + item.name;
+        document.getElementById('editId').value = item.id;
+        document.getElementById('editName').value = item.name;
+        document.getElementById('editImg').value = item.img;
+
+        if (type === 'theme') {
+            document.getElementById('brandFields').style.display = 'block';
+            document.getElementById('singleLinkGroup').style.display = 'none';
+            document.getElementById('editXiaomi').value = item.xiaomi || '';
+            document.getElementById('editOppo').value = item.oppo || '';
+            document.getElementById('editVivo').value = item.vivo || '';
+        } else {
+            document.getElementById('brandFields').style.display = 'none';
+            document.getElementById('singleLinkGroup').style.display = 'block';
+            document.getElementById('editLink').value = item.link || '';
+        }
+
+        document.getElementById('editModal').classList.add('show');
+    }
+
+    function openAddModal(type) {
+        currentType = type;
+        editingId = null;
+        document.getElementById('modalTitle').textContent = '添加新' + (type === 'theme' ? '主题' : type === 'icon' ? '图标包' : '手表');
+        document.getElementById('editId').value = '';
+        document.getElementById('editName').value = '';
+        document.getElementById('editImg').value = '';
+        document.getElementById('editXiaomi').value = '';
+        document.getElementById('editOppo').value = '';
+        document.getElementById('editVivo').value = '';
+        document.getElementById('editLink').value = '';
+
+        if (type === 'theme') {
+            document.getElementById('brandFields').style.display = 'block';
+            document.getElementById('singleLinkGroup').style.display = 'none';
+        } else {
+            document.getElementById('brandFields').style.display = 'none';
+            document.getElementById('singleLinkGroup').style.display = 'block';
+        }
+
+        document.getElementById('editModal').classList.add('show');
+    }
+
+    function closeEditModal() {
+        document.getElementById('editModal').classList.remove('show');
+    }
+
+    function saveEdit() {
+        var type = currentType;
+        var id = document.getElementById('editId').value.trim();
+        var name = document.getElementById('editName').value.trim();
+        var img = document.getElementById('editImg').value.trim();
+
+        if (!id || !name || !img) {
+            showToast('请填写完整信息');
+            return;
+        }
+
+        var items = data[type];
+        if (type === 'theme') {
+            var xiaomi = document.getElementById('editXiaomi').value.trim();
+            var oppo = document.getElementById('editOppo').value.trim();
+            var vivo = document.getElementById('editVivo').value.trim();
+
+            if (editingId) {
+                for (var i = 0; i < items.length; i++) {
+                    if (items[i].id === editingId) {
+                        items[i].id = id;
+                        items[i].name = name;
+                        items[i].img = img;
+                        items[i].xiaomi = xiaomi;
+                        items[i].oppo = oppo;
+                        items[i].vivo = vivo;
+                        break;
+                    }
+                }
+            } else {
+                items.push({ id:id, name:name, img:img, xiaomi:xiaomi, oppo:oppo, vivo:vivo });
+            }
+        } else {
+            var link = document.getElementById('editLink').value.trim();
+            if (editingId) {
+                for (var i = 0; i < items.length; i++) {
+                    if (items[i].id === editingId) {
+                        items[i].id = id;
+                        items[i].name = name;
+                        items[i].img = img;
+                        items[i].link = link;
+                        break;
+                    }
+                }
+            } else {
+                items.push({ id:id, name:name, img:img, link:link });
+            }
+        }
+
+        closeEditModal();
+        renderAll();
+        showToast('保存成功！点击「💾 保存到 data.json」按钮下载更新');
+    }
+
+    // ===== 删除 =====
+    function deleteItem(type, id) {
+        if (!confirm('确定删除 ' + id + ' 吗？')) return;
+        var items = data[type];
+        for (var i = 0; i < items.length; i++) {
+            if (items[i].id === id) { items.splice(i, 1); break; }
+        }
+        renderAll();
+        showToast('已删除');
+    }
+
+    
+
+    // ===== Toast =====
+    function showToast(msg) {
+        var t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        clearTimeout(t._timer);
+        t._timer = setTimeout(function() { t.classList.remove('show'); }, 3000);
+    }
+
+    // ===== 弹窗点击外部关闭 =====
+    document.getElementById('editModal').addEventListener('click', function(e) {
+        if (e.target === this) closeEditModal();
+    });
+
+    // ===== 初始化 =====
+    loadData();
+</script>
+
+</body>
+</html>
