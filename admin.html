@@ -327,7 +327,7 @@
 <main class="main-content">
     <div class="topbar">
         <h1 id="panelTitle">主题管理</h1>
-        <button class="save-btn" onclick="saveDataToFile()" style="padding:8px 20px;border:none;border-radius:10px;background:#1a1a2e;color:#fff;font-size:14px;font-weight:500;cursor:pointer;transition:all 0.2s;">💾 保存到 data.json</button>
+        <button class="save-btn" onclick="saveDataToFile()" style="padding:8px 20px;border:none;border-radius:10px;background:#1a1a2e;color:#fff;font-size:14px;font-weight:500;cursor:pointer;transition:all 0.2s;">☁️ 保存到 GitHub</button>
     </div>
 
     <!-- 主题面板 -->
@@ -361,6 +361,28 @@
 
 <!-- 提示 -->
 <div class="toast" id="toast"></div>
+
+<!-- Token 设置弹窗 -->
+<div class="modal" id="tokenModal">
+    <div class="modal-box">
+        <h3>⚙️ GitHub Token 设置</h3>
+        <div class="form-group">
+            <label>GitHub Personal Access Token</label>
+            <input id="tokenInput" type="password" placeholder="输入你的 GitHub Token">
+            <div class="helper">Token 仅保存在你浏览器本地，不会上传</div>
+        </div>
+        <div class="form-group">
+            <label>分支名</label>
+            <input id="branchInput" placeholder="main 或 master">
+            <div class="helper">你的 GitHub Pages 使用的分支</div>
+        </div>
+        <div class="modal-actions">
+            <button class="cancel-btn" onclick="closeTokenModal()">取消</button>
+            <button class="confirm-btn" onclick="verifyToken()" style="background:#667eea;">验证 Token</button>
+            <button class="confirm-btn" onclick="saveToken()">保存</button>
+        </div>
+    </div>
+</div>
 
 <!-- 编辑弹窗 -->
 <div class="modal" id="editModal">
@@ -396,6 +418,14 @@
 </div>
 
 <script>
+
+    // ===== GitHub 配置 =====
+    // 从 localStorage 读取 Token，首次使用需要设置
+    var GITHUB_TOKEN = localStorage.getItem('github_token') || '';
+    var GITHUB_OWNER = 'Alittlejelly';
+    var GITHUB_REPO = 'Alittlejelly.github.io';
+    var GITHUB_BRANCH = 'main';  // 你的默认分支名，可能是 main 或 master
+    var GITHUB_FILE_PATH = 'data.json';
 
     var ENCODED_PASSWORD = 'QEh3cTU3NTcxNjk5NTE1MQ==';
   
@@ -433,20 +463,67 @@
             });
     }
 
-    // ===== 保存数据到 data.json =====
+    // ===== 通过 GitHub API 获取 data.json 的 SHA（用于更新） =====
+    function getFileSha() {
+        var url = 'https://api.github.com/repos/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/contents/' + GITHUB_FILE_PATH + '?ref=' + GITHUB_BRANCH;
+        return fetch(url, {
+            headers: { 'Authorization': 'token ' + GITHUB_TOKEN }
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(json) {
+            if (json.sha) return json.sha;
+            throw new Error('获取 SHA 失败: ' + JSON.stringify(json));
+        });
+    }
+
+    // ===== 通过 GitHub API 直接提交 data.json =====
     function saveDataToFile() {
+        if (!GITHUB_TOKEN) {
+            showToast('⚠️ 请先设置 GitHub Token！双击标题打开设置');
+            return;
+        }
+
+        var btn = document.querySelector('.save-btn');
+        btn.textContent = '⏳ 正在提交...';
+        btn.disabled = true;
+
         var jsonStr = JSON.stringify(data, null, 2);
-        // 使用 Blob 创建下载链接，覆盖 data.json
-        var blob = new Blob([jsonStr], { type: 'application/json' });
-        var url = URL.createObjectURL(blob);
-        var a = document.createElement('a');
-        a.href = url;
-        a.download = 'data.json';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        showToast('✅ data.json 已下载，请替换原文件后提交到 GitHub');
+        var content = btoa(unescape(encodeURIComponent(jsonStr))); // Base64 编码（支持中文）
+
+        // 先获取当前文件的 SHA
+        getFileSha()
+            .then(function(sha) {
+                // 提交更新
+                return fetch('https://api.github.com/repos/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/contents/' + GITHUB_FILE_PATH, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': 'token ' + GITHUB_TOKEN,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: '🔄 后台更新 data.json - ' + new Date().toLocaleString('zh-CN'),
+                        content: content,
+                        sha: sha,
+                        branch: GITHUB_BRANCH
+                    })
+                });
+            })
+            .then(function(res) { return res.json(); })
+            .then(function(json) {
+                if (json.content) {
+                    showToast('✅ 已提交到 GitHub！等待 Pages 部署（约1-2分钟）');
+                } else {
+                    throw new Error(JSON.stringify(json));
+                }
+            })
+            .catch(function(err) {
+                console.error('提交失败', err);
+                showToast('❌ 提交失败: ' + err.message);
+            })
+            .finally(function() {
+                btn.textContent = '☁️ 保存到 GitHub';
+                btn.disabled = false;
+            });
     }
 
     var currentType = 'theme';
@@ -633,7 +710,7 @@
 
         closeEditModal();
         renderAll();
-        showToast('保存成功！点击「💾 保存到 data.json」按钮下载更新');
+        showToast('保存成功！点击「☁️ 保存到 GitHub」按钮提交更新');
     }
 
     // ===== 删除 =====
@@ -648,6 +725,82 @@
     }
 
     
+
+    // ===== Token 设置弹窗 =====
+    function openTokenModal() {
+        document.getElementById('tokenInput').value = localStorage.getItem('github_token') || '';
+        document.getElementById('branchInput').value = localStorage.getItem('github_branch') || 'main';
+        document.getElementById('tokenModal').classList.add('show');
+    }
+
+    // 验证 Token 是否有效
+    function verifyToken() {
+        var token = document.getElementById('tokenInput').value.trim();
+        if (!token) { showToast('请输入 Token'); return; }
+        
+        var btn = document.querySelector('#tokenModal .confirm-btn');
+        btn.textContent = '⏳ 验证中...';
+        btn.disabled = true;
+
+        fetch('https://api.github.com/user', {
+            headers: { 'Authorization': 'token ' + token }
+        })
+        .then(function(res) {
+            if (res.ok) return res.json();
+            if (res.status === 401) throw new Error('Token 无效');
+            if (res.status === 403) throw new Error('Token 权限不足');
+            throw new Error('HTTP ' + res.status);
+        })
+        .then(function(user) {
+            showToast('✅ Token 有效，用户: ' + user.login);
+            // 自动填入分支
+            return fetch('https://api.github.com/repos/' + GITHUB_OWNER + '/' + GITHUB_REPO, {
+                headers: { 'Authorization': 'token ' + token }
+            });
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(repo) {
+            if (repo.default_branch) {
+                document.getElementById('branchInput').value = repo.default_branch;
+            }
+        })
+        .catch(function(err) {
+            showToast('❌ ' + err.message);
+        })
+        .finally(function() {
+            btn.textContent = '保存';
+            btn.disabled = false;
+        });
+    }
+
+    function closeTokenModal() {
+        document.getElementById('tokenModal').classList.remove('show');
+    }
+
+    function saveToken() {
+        var token = document.getElementById('tokenInput').value.trim();
+        var branch = document.getElementById('branchInput').value.trim() || 'main';
+        if (!token) {
+            showToast('请输入 Token');
+            return;
+        }
+        localStorage.setItem('github_token', token);
+        localStorage.setItem('github_branch', branch);
+        GITHUB_TOKEN = token;
+        GITHUB_BRANCH = branch;
+        closeTokenModal();
+        showToast('✅ Token 已保存到本地浏览器');
+    }
+
+    // 双击标题打开 Token 设置
+    document.getElementById('panelTitle').addEventListener('dblclick', function() {
+        openTokenModal();
+    });
+
+    // 弹窗点击外部关闭
+    document.getElementById('tokenModal').addEventListener('click', function(e) {
+        if (e.target === this) closeTokenModal();
+    });
 
     // ===== Toast =====
     function showToast(msg) {
