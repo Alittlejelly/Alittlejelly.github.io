@@ -61,16 +61,23 @@
     {
       "id": "recircle",
       "name": "重圆图标包",
-      "img": "iconpack_preview/recicle.webp",
+      "img": "https://cdn.lightxi.com/cloudreve/uploads/2026/07/17/NTPGlUQ3_chongyuan.png",
       "link": "https://afdian.com/item/da336be6c64811ee96b95254001e7c00",
-      "xhs": ""
+      "xhs": "http://xhslink.com/o/395ICoBgERm"
     },
     {
       "id": "yuanqi",
       "name": "圆启图标包",
-      "img": "iconpack_preview/circlestart.webp",
+      "img": "https://cdn.lightxi.com/cloudreve/uploads/2026/07/17/ln3dd2wA_yuanqi.png",
       "link": "https://afdian.com/item/f7d3152ec28c11f08b7e5254001e7c00",
-      "xhs": ""
+      "xhs": "http://xhslink.com/o/2W2lNYGSrIb"
+    },
+    {
+      "id": "yuanying",
+      "name": "远影",
+      "img": "https://cdn.lightxi.com/cloudreve/uploads/2026/07/17/Rj30zUyq_yuanying.png",
+      "link": "https://www.ifdian.net/item/6d0fa6b403d211f1a09b5254001e7c00",
+      "xhs": "http://xhslink.com/o/3cJdGw7fr0x"
     }
   ],
   "watch": [
