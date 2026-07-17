@@ -407,8 +407,12 @@
             <div class="form-group"><label>vivo 链接</label><input id="editVivo" placeholder="可选"></div>
         </div>
         <div class="form-group" id="singleLinkGroup" style="display:none">
-            <label>跳转链接</label>
-            <input id="editLink" placeholder="外部链接地址">
+            <label>爱发电链接</label>
+            <input id="editLink" placeholder="爱发电链接地址">
+        </div>
+        <div class="form-group" id="xhsLinkGroup" style="display:none">
+            <label>小红书链接</label>
+            <input id="editXhs" placeholder="小红书链接地址">
         </div>
         <div class="modal-actions">
             <button class="cancel-btn" onclick="closeEditModal()">取消</button>
@@ -574,7 +578,8 @@
                            '<span class="tag' + (item.oppo ? ' has-link' : '') + '">OPPO</span>' +
                            '<span class="tag' + (item.vivo ? ' has-link' : '') + '">vivo</span>';
             } else {
-                linkTags = '<span class="tag' + (item.link ? ' has-link' : '') + '">链接</span>';
+                linkTags = '<span class="tag' + (item.link ? ' has-link' : '') + '">爱发电</span>' +
+                           '<span class="tag' + (item.xhs ? ' has-link' : '') + '">小红书</span>';
             }
             html += '<div class="manage-card">' +
                         '<div class="preview' + (wide ? ' wide' : '') + '" style="background-image:url(' + item.img + ')"></div>' +
@@ -626,7 +631,9 @@
         } else {
             document.getElementById('brandFields').style.display = 'none';
             document.getElementById('singleLinkGroup').style.display = 'block';
+            document.getElementById('xhsLinkGroup').style.display = 'block';
             document.getElementById('editLink').value = item.link || '';
+            document.getElementById('editXhs').value = item.xhs || '';
         }
 
         document.getElementById('editModal').classList.add('show');
@@ -643,13 +650,16 @@
         document.getElementById('editOppo').value = '';
         document.getElementById('editVivo').value = '';
         document.getElementById('editLink').value = '';
+        document.getElementById('editXhs').value = '';
 
         if (type === 'theme') {
             document.getElementById('brandFields').style.display = 'block';
             document.getElementById('singleLinkGroup').style.display = 'none';
+            document.getElementById('xhsLinkGroup').style.display = 'none';
         } else {
             document.getElementById('brandFields').style.display = 'none';
             document.getElementById('singleLinkGroup').style.display = 'block';
+            document.getElementById('xhsLinkGroup').style.display = 'block';
         }
 
         document.getElementById('editModal').classList.add('show');
@@ -693,6 +703,7 @@
             }
         } else {
             var link = document.getElementById('editLink').value.trim();
+            var xhs = document.getElementById('editXhs').value.trim();
             if (editingId) {
                 for (var i = 0; i < items.length; i++) {
                     if (items[i].id === editingId) {
@@ -700,11 +711,12 @@
                         items[i].name = name;
                         items[i].img = img;
                         items[i].link = link;
+                        items[i].xhs = xhs;
                         break;
                     }
                 }
             } else {
-                items.push({ id:id, name:name, img:img, link:link });
+                items.push({ id:id, name:name, img:img, link:link, xhs:xhs });
             }
         }
 

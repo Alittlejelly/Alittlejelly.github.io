@@ -62,13 +62,15 @@
       "id": "recircle",
       "name": "重圆图标包",
       "img": "iconpack_preview/recicle.webp",
-      "link": "https://afdian.com/item/da336be6c64811ee96b95254001e7c00"
+      "link": "https://afdian.com/item/da336be6c64811ee96b95254001e7c00",
+      "xhs": ""
     },
     {
       "id": "yuanqi",
       "name": "圆启图标包",
       "img": "iconpack_preview/circlestart.webp",
-      "link": "https://afdian.com/item/f7d3152ec28c11f08b7e5254001e7c00"
+      "link": "https://afdian.com/item/f7d3152ec28c11f08b7e5254001e7c00",
+      "xhs": ""
     }
   ],
   "watch": [
@@ -76,7 +78,8 @@
       "id": "recircle",
       "name": "重圆表盘",
       "img": "watch_preview/circle.webp",
-      "link": "https://www.bandbbs.cn/resources/3368/"
+      "link": "https://www.bandbbs.cn/resources/3368/",
+      "xhs": ""
     }
   ]
 }
