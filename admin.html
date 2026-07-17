@@ -8,7 +8,7 @@
     <meta http-equiv="Expires" content="0">
     <title>果冻设计 - 后台管理</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, 'MiSans', sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, 'MiSans', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background: #f5f5f5; min-height: 100vh; display: flex; }
         /* 登录页 */
         .login-screen {
@@ -39,12 +39,12 @@
         .login-box .error { font-size: 12px; color: #dc2626; margin-bottom: 10px; min-height: 18px; }
 
         /* 侧边栏 */
-                                .sidebar {
-                                    width: 220px; min-height: 100vh; background: #fff;
-                                    border-right: 1px solid #eee; padding: 24px 16px;
-                    display: flex; flex-direction: column; position: fixed; left: 0; top: 0; z-index: 10;
-                }
-                .sidebar .nav-item:first-child { margin-top: 0; }
+        .sidebar {
+            width: 220px; min-height: 100vh; background: #fff;
+            border-right: 1px solid #eee; padding: 24px 16px;
+            display: flex; flex-direction: column; position: fixed; left: 0; top: 0; z-index: 10;
+        }
+        .sidebar .nav-item:first-child { margin-top: 0; }
         .sidebar .nav-item {
             display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px;
             font-size: 14px; font-weight: 500; color: #666; cursor: pointer; transition: all 0.2s;
@@ -57,10 +57,10 @@
             padding: 10px 12px; border-radius: 10px; font-size: 13px; color: #999;
             text-decoration: none; transition: all 0.2s;
         }
-                .sidebar .back-link:hover { background: #f0f0f0; color: #666; }
+        .sidebar .back-link:hover { background: #f0f0f0; color: #666; }
 
         /* 主内容 */
-        .main-content { margin-left: 120px; flex: 1; padding: 32px 32px 32px 20px; min-height: 100vh; }
+        .main-content { margin-left: 220px; flex: 1; padding: 32px 32px 32px 20px; min-height: 100vh; }
 
         .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
         .topbar h1 { font-size: 22px; font-weight: 700; color: #1a1a2e; }
@@ -86,6 +86,7 @@
             font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s;
         }
         .panel-header .add-btn:hover { background: #1a1a2e; color: #fff; }
+        .panel-header .back-site-btn { font-weight: 500 ;display: none; }
 
         /* 管理卡片网格 */
         .item-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
@@ -169,9 +170,9 @@
 
 
         @media (max-width: 860px) {
-                    .sidebar { width: 200px; padding: 20px 12px; }
-                    .main-content { margin-left: 200px; padding: 24px 16px 24px 12px; }
-                }
+            .sidebar { width: 200px; padding: 20px 12px; }
+            .main-content { margin-left: 200px; padding: 24px 16px 24px 12px; }
+        }
 
         @media (max-width: 640px) {
             .mobile-nav {
@@ -222,18 +223,7 @@
             }
 
             body { flex-direction: column; }
-            .sidebar {
-                width: 100%;
-                min-height: auto;
-                position: static;
-                flex-direction: column;
-                padding: 8px 14px;
-                border-right: none;
-                border-bottom: none;
-                align-items: center;
-            }
-            .sidebar .nav-item { display: none; }
-            .sidebar .back-link { display: none; }
+            .sidebar { display: none; }
 
             .main-content {
                 margin-left: 0;
@@ -241,13 +231,13 @@
             }
 
             .topbar {
-                flex-direction: column;
+                flex-direction: row;
                 align-items: center;
-                justify-content: center;
+                justify-content: space-between;
                 gap: 10px;
                 margin-bottom: 16px;
             }
-            .topbar h1 { font-size: 18px; text-align: center; }
+            .topbar h1 { font-size: 18px; }
             .topbar .save-btn {
                 padding: 6px 16px;
                 font-size: 13px;
@@ -261,11 +251,29 @@
                 justify-content: space-between;
             }
             .panel-header h3 { font-size: 14px; margin: 0; }
+            .panel-header .header-actions {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
             .panel-header .add-btn {
                 padding: 4px 12px;
                 font-size: 12px;
                 border-radius: 8px;
             }
+            .panel-header .back-site-btn {
+                padding: 4px 10px;
+                font-size: 12px;
+                border-radius: 8px;
+                background: #f0f0f0;
+                color: #1a1a2e;
+                text-decoration: none;
+                transition: all 0.2s;
+                display: inline-flex;
+                align-items: center;
+                gap: 3px;
+            }
+            .panel-header .back-site-btn:hover { background: #e0e0e0; color: #333; }
 
             .item-grid {
                 grid-template-columns: 1fr !important;
@@ -312,7 +320,7 @@
     <button class="nav-item active" data-panel="themePanel">主题管理</button>
     <button class="nav-item" data-panel="iconPanel">图标包管理</button>
     <button class="nav-item" data-panel="watchPanel">手表管理</button>
-    <a class="back-link" href="index.html">← 返回前台</a>
+    <a class="back-link" href="index.html">返回前台</a>
 </aside>
 
     <!-- 手机端悬浮底栏 -->
@@ -327,14 +335,17 @@
 <main class="main-content">
     <div class="topbar">
         <h1 id="panelTitle">主题管理</h1>
-        <button class="save-btn" onclick="saveDataToFile()" style="padding:8px 20px;border:none;border-radius:10px;background:#1a1a2e;color:#fff;font-size:14px;font-weight:500;cursor:pointer;transition:all 0.2s;">保存到 GitHub</button>
+        <button class="save-btn" onclick="saveDataToFile()" style="padding:8px 20px;border:none;border-radius:10px;background:#1a1a2e;color:#fff;font-size:14px;font-weight:500;cursor:pointer;transition:all 0.2s;">提交到 GitHub</button>
     </div>
 
     <!-- 主题面板 -->
     <div class="panel active" id="themePanel">
         <div class="panel-header">
             <h3>主题列表</h3>
-            <button class="add-btn" onclick="openAddModal('theme')">添加主题</button>
+            <div class="header-actions">
+                <a class="back-site-btn" href="index.html">返回主站</a>
+                <button class="add-btn" onclick="openAddModal('theme')">添加主题</button>
+            </div>
         </div>
         <div class="item-grid" id="themeGrid"></div>
     </div>
@@ -343,7 +354,10 @@
     <div class="panel" id="iconPanel">
         <div class="panel-header">
             <h3>图标包列表</h3>
-            <button class="add-btn" onclick="openAddModal('icon')">添加图标包</button>
+            <div class="header-actions">
+                <a class="back-site-btn" href="index.html">返回主站</a>
+                <button class="add-btn" onclick="openAddModal('icon')">添加图标包</button>
+            </div>
         </div>
         <div class="item-grid" id="iconGrid"></div>
     </div>
@@ -352,7 +366,10 @@
     <div class="panel" id="watchPanel">
         <div class="panel-header">
             <h3>手表列表</h3>
-            <button class="add-btn" onclick="openAddModal('watch')">添加手表</button>
+            <div class="header-actions">
+                <a class="back-site-btn" href="index.html">返回主站</a>
+                <button class="add-btn" onclick="openAddModal('watch')">添加手表</button>
+            </div>
         </div>
         <div class="item-grid" id="watchGrid"></div>
     </div>
