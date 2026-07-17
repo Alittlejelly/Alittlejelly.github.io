@@ -327,14 +327,14 @@
 <main class="main-content">
     <div class="topbar">
         <h1 id="panelTitle">主题管理</h1>
-        <button class="save-btn" onclick="saveDataToFile()" style="padding:8px 20px;border:none;border-radius:10px;background:#1a1a2e;color:#fff;font-size:14px;font-weight:500;cursor:pointer;transition:all 0.2s;">☁️ 保存到 GitHub</button>
+        <button class="save-btn" onclick="saveDataToFile()" style="padding:8px 20px;border:none;border-radius:10px;background:#1a1a2e;color:#fff;font-size:14px;font-weight:500;cursor:pointer;transition:all 0.2s;">保存到 GitHub</button>
     </div>
 
     <!-- 主题面板 -->
     <div class="panel active" id="themePanel">
         <div class="panel-header">
             <h3>主题列表</h3>
-            <button class="add-btn" onclick="openAddModal('theme')">+ 添加主题</button>
+            <button class="add-btn" onclick="openAddModal('theme')">添加主题</button>
         </div>
         <div class="item-grid" id="themeGrid"></div>
     </div>
@@ -343,7 +343,7 @@
     <div class="panel" id="iconPanel">
         <div class="panel-header">
             <h3>图标包列表</h3>
-            <button class="add-btn" onclick="openAddModal('icon')">+ 添加图标包</button>
+            <button class="add-btn" onclick="openAddModal('icon')">添加图标包</button>
         </div>
         <div class="item-grid" id="iconGrid"></div>
     </div>
@@ -352,7 +352,7 @@
     <div class="panel" id="watchPanel">
         <div class="panel-header">
             <h3>手表列表</h3>
-            <button class="add-btn" onclick="openAddModal('watch')">+ 添加手表</button>
+            <button class="add-btn" onclick="openAddModal('watch')">添加手表</button>
         </div>
         <div class="item-grid" id="watchGrid"></div>
     </div>
@@ -365,7 +365,7 @@
 <!-- Token 设置弹窗 -->
 <div class="modal" id="tokenModal">
     <div class="modal-box">
-        <h3>⚙️ GitHub Token 设置</h3>
+        <h3>GitHub Token 设置</h3>
         <div class="form-group">
             <label>GitHub Personal Access Token</label>
             <input id="tokenInput" type="password" placeholder="输入你的 GitHub Token">
@@ -479,12 +479,12 @@
     // ===== 通过 GitHub API 直接提交 data.json =====
     function saveDataToFile() {
         if (!GITHUB_TOKEN) {
-            showToast('⚠️ 请先设置 GitHub Token！双击标题打开设置');
+            showToast('请先设置 GitHub Token！双击标题打开设置');
             return;
         }
 
         var btn = document.querySelector('.save-btn');
-        btn.textContent = '⏳ 正在提交...';
+        btn.textContent = '正在提交...';
         btn.disabled = true;
 
         var jsonStr = JSON.stringify(data, null, 2);
@@ -501,7 +501,7 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        message: '🔄 后台更新 data.json - ' + new Date().toLocaleString('zh-CN'),
+                        message: '后台更新 data.json - ' + new Date().toLocaleString('zh-CN'),
                         content: content,
                         sha: sha,
                         branch: GITHUB_BRANCH
@@ -511,14 +511,14 @@
             .then(function(res) { return res.json(); })
             .then(function(json) {
                 if (json.content) {
-                    showToast('✅ 已提交到 GitHub！等待 Pages 部署（约1-2分钟）');
+                    showToast('已提交到 GitHub！等待 Pages 部署（约1-2分钟）');
                 } else {
                     throw new Error(JSON.stringify(json));
                 }
             })
             .catch(function(err) {
                 console.error('提交失败', err);
-                showToast('❌ 提交失败: ' + err.message);
+                showToast('提交失败: ' + err.message);
             })
             .finally(function() {
                 btn.textContent = '提交到 GitHub';
@@ -710,7 +710,7 @@
 
         closeEditModal();
         renderAll();
-        showToast('保存成功！点击「☁️ 保存到 GitHub」按钮提交更新');
+        showToast('提交成功！点击「提交到 GitHub」按钮提交更新');
     }
 
     // ===== 删除 =====
@@ -739,7 +739,7 @@
         if (!token) { showToast('请输入 Token'); return; }
         
         var btn = document.querySelector('#tokenModal .confirm-btn');
-        btn.textContent = '⏳ 验证中...';
+        btn.textContent = '验证中...';
         btn.disabled = true;
 
         fetch('https://api.github.com/user', {
@@ -752,7 +752,7 @@
             throw new Error('HTTP ' + res.status);
         })
         .then(function(user) {
-            showToast('✅ Token 有效，用户: ' + user.login);
+            showToast('Token 有效，用户: ' + user.login);
             // 自动填入分支
             return fetch('https://api.github.com/repos/' + GITHUB_OWNER + '/' + GITHUB_REPO, {
                 headers: { 'Authorization': 'token ' + token }
@@ -765,7 +765,7 @@
             }
         })
         .catch(function(err) {
-            showToast('❌ ' + err.message);
+            showToast('Token 验证失败: ' + err.message);
         })
         .finally(function() {
             btn.textContent = '保存';
@@ -789,7 +789,7 @@
         GITHUB_TOKEN = token;
         GITHUB_BRANCH = branch;
         closeTokenModal();
-        showToast('✅ Token 已保存到本地浏览器');
+        showToast('Token 已保存到本地浏览器');
     }
 
     // 双击标题打开 Token 设置
