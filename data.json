@@ -3,7 +3,7 @@
     {
       "id": "recircle",
       "name": "重圆",
-      "img": "theme_preview/recircle.webp",
+      "img": "https://cdn.lightxi.com/cloudreve/uploads/2026/07/17/dQg9AL8f_recircle.png",
       "xiaomi": "https://zhuti.xiaomi.com/detail/share/0b86fedc-4c8e-43a1-a13f-2c028ef677a2?miref=share&packId=98ba96a4-1bfb-415e-8902-fe4773799674",
       "oppo": "https://theme-h5-static.heytap.com/sp/theme/storeStatic/themeDetailShare/themedetail/index.html?masterId=4228915&region=CN&type=0",
       "vivo": "https://ai-h5.vivo.com.cn/itheme-share-detail/index.html?themetype=1&resId=100222115&baiduInputVersion=8.5.204.983"
@@ -11,7 +11,7 @@
     {
       "id": "fangbai",
       "name": "方白",
-      "img": "theme_preview/fangbai.webp",
+      "img": "https://cdn.lightxi.com/cloudreve/uploads/2026/07/17/KcsIEvCO_fangbai.png",
       "xiaomi": "https://zhuti.xiaomi.com/detail/share/9c937a4a-3f53-4314-90fc-4289584d45ca?miref=share&packId=0799e1ca-8a76-4dc1-9aec-ca5e2b51e9d2",
       "oppo": "https://theme-h5-static.heytap.com/sp/theme/storeStatic/themeDetailShare/themedetail/index.html?masterId=4958339&region=CN&type=0",
       "vivo": ""
@@ -19,7 +19,7 @@
     {
       "id": "yuanying",
       "name": "远影",
-      "img": "theme_preview/yuanying.webp",
+      "img": "https://cdn.lightxi.com/cloudreve/uploads/2026/07/17/fuJhpip1_yuanying.png",
       "xiaomi": "https://zhuti.xiaomi.com/detail/share/8e517b66-ce12-48a8-9135-5797f51d1a4d?miref=share&packId=adf5cc3e-c63e-4d09-b0e9-39b6c9a7fba9",
       "oppo": "https://theme-h5-static.heytap.com/sp/theme/storeStatic/themeDetailShare/themedetail/index.html?masterId=6992873&region=CN&type=0",
       "vivo": ""
@@ -27,7 +27,7 @@
     {
       "id": "yunqing",
       "name": "云轻",
-      "img": "theme_preview/yunqing.webp",
+      "img": "https://cdn.lightxi.com/cloudreve/uploads/2026/07/17/PPOGijv4_yunqing.png",
       "xiaomi": "https://zhuti.xiaomi.com/detail/share/1726a7c1-9ef3-433a-ba3f-8d0566ed68a1?miref=share&packId=0e43dc87-8a59-4439-8074-0738ddc357e0",
       "oppo": "https://theme-h5-static.heytap.com/sp/theme/storeStatic/themeDetailShare/themedetail/index.html?masterId=5760187&region=CN&type=0",
       "vivo": ""
@@ -35,7 +35,7 @@
     {
       "id": "yuanqi",
       "name": "圆启",
-      "img": "theme_preview/recirclestar.webp",
+      "img": "https://cdn.lightxi.com/cloudreve/uploads/2026/07/17/I058Gnzb_recirclestar.png",
       "xiaomi": "https://zhuti.xiaomi.com/detail/share/29452b9a-e931-454d-ac15-e33d1f6e32e8?miref=share&packId=f591f58d-05b4-4cb8-80d1-351524f68cee",
       "oppo": "https://theme-h5-static.heytap.com/sp/theme/storeStatic/themeDetailShare/themedetail/index.html?masterId=11033449&region=CN&type=0",
       "vivo": ""
@@ -43,18 +43,18 @@
     {
       "id": "binfen",
       "name": "缤纷",
-      "img": "theme_preview/binfen.webp",
+      "img": "https://cdn.lightxi.com/cloudreve/uploads/2026/07/17/yera06x1_binfen.png",
       "xiaomi": "https://zhuti.xiaomi.com/detail/share/9fcf4a91-ec62-4a99-86e3-26c71871074d?miref=share&packId=50c8a643-ee41-4bb9-90d9-03aa80bf79dc",
       "oppo": "https://theme-h5-static.heytap.com/sp/theme/storeStatic/themeDetailShare/themedetail/index.html?masterId=6739549&region=CN&type=0",
       "vivo": ""
     },
     {
-      "id": "test",
-      "name": "test",
-      "img": "test",
-      "xiaomi": "test",
-      "oppo": "test",
-      "vivo": "test"
+      "id": "qingzhigan",
+      "name": "轻质感",
+      "img": "https://cdn.lightxi.com/cloudreve/uploads/2026/07/17/InYi9l8m_qingzhigan.png",
+      "xiaomi": "#小米主题#如你所见，《轻质感》主题让你的手机与众不同，给你专属个https://zhuti.xiaomi.com/detail/share/b588029e-7d53-49c4-87d7-e7c91eead80a?miref=share&packId=74c455c8-3585-4321-b5c6-57a467446da6",
+      "oppo": "",
+      "vivo": ""
     }
   ],
   "icon": [
