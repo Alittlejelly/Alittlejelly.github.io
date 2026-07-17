@@ -575,7 +575,7 @@
     <!-- 顶部栏 -->
     <div class="topbar">
         <div class="topbar-left">
-            <h1 id="panelTitle">主题项目</h1>
+            <h1 id="panelTitle">主题</h1>
         </div>
 
     </div>
@@ -792,8 +792,8 @@
             document.getElementById(target).classList.add('active');
 
             // 更新标题
-            var titleMap = { themePanel:'主题项目', iconPanel:'图标包项目', watchPanel:'手表项目' };
-            document.getElementById('panelTitle').textContent = titleMap[target] || '项目';
+            var titleMap = { themePanel:'主题', iconPanel:'图标包', watchPanel:'手表' };
+            document.getElementById('panelTitle').textContent = titleMap[target] || '暂无';
 
             // 更新滑块
             var mobileNav = document.getElementById('mobileNav');
