@@ -626,10 +626,7 @@
     <div class="modal-box">
         <span class="modal-close">&times;</span>
         <h2 class="modal-title"></h2>
-        <div class="modal-actions">
-            <button class="modal-btn" data-brand="link">爱发电</button>
-            <button class="modal-btn" data-brand="xhs">小红书</button>
-        </div>
+        <div class="modal-actions" id="linkModalActions"></div>
     </div>
 </div>
 
@@ -662,12 +659,12 @@
                         { id:"qingzhigan", name:"轻质感", img:"https://cdn.lightxi.com/cloudreve/uploads/2026/07/17/InYi9l8m_qingzhigan.png", xiaomi:"https://zhuti.xiaomi.com/detail/share/b588029e-7d53-49c4-87d7-e7c91eead80a?miref=share&packId=74c455c8-3585-4321-b5c6-57a467446da6", oppo:"", vivo:"" },
                     ],
                     icon: [
-                        { id:"recircle", name:"重圆图标包", img:"https://cdn.lightxi.com/cloudreve/uploads/2026/07/17/NTPGlUQ3_chongyuan.png", link:"https://afdian.com/item/da336be6c64811ee96b95254001e7c00", xhs:"http://xhslink.com/o/395ICoBgERm" },
-                        { id:"yuanqi", name:"圆启图标包", img:"https://cdn.lightxi.com/cloudreve/uploads/2026/07/17/ln3dd2wA_yuanqi.png", link:"https://afdian.com/item/f7d3152ec28c11f08b7e5254001e7c00", xhs:"http://xhslink.com/o/2W2lNYGSrIb" },
-                        { id:"yuanying", name:"远影", img:"https://cdn.lightxi.com/cloudreve/uploads/2026/07/17/Rj30zUyq_yuanying.png", link:"https://www.ifdian.net/item/6d0fa6b403d211f1a09b5254001e7c00", xhs:"http://xhslink.com/o/3cJdGw7fr0x" },
+                        { id:"recircle", name:"重圆图标包", img:"https://cdn.lightxi.com/cloudreve/uploads/2026/07/17/NTPGlUQ3_chongyuan.png", links:[{"label":"爱发电","url":"https://afdian.com/item/da336be6c64811ee96b95254001e7c00"},{"label":"小红书","url":"http://xhslink.com/o/395ICoBgERm"}] },
+                        { id:"yuanqi", name:"圆启图标包", img:"https://cdn.lightxi.com/cloudreve/uploads/2026/07/17/ln3dd2wA_yuanqi.png", links:[{"label":"爱发电","url":"https://afdian.com/item/f7d3152ec28c11f08b7e5254001e7c00"},{"label":"小红书","url":"http://xhslink.com/o/2W2lNYGSrIb"}] },
+                        { id:"yuanying", name:"远影", img:"https://cdn.lightxi.com/cloudreve/uploads/2026/07/17/Rj30zUyq_yuanying.png", links:[{"label":"爱发电","url":"https://www.ifdian.net/item/6d0fa6b403d211f1a09b5254001e7c00"},{"label":"小红书","url":"http://xhslink.com/o/3cJdGw7fr0x"}] },
                     ],
                     watch: [
-                        { id:"recircle", name:"重圆表盘", img:"watch_preview/circle.webp", link:"https://www.bandbbs.cn/resources/3368/", xhs:"" },
+                        { id:"recircle", name:"重圆表盘", img:"watch_preview/circle.webp", links:[{"label":"下载","url":"https://www.bandbbs.cn/resources/3368/"}] },
                     ],
                 };
                 siteData = defaultData;
@@ -730,13 +727,7 @@
                 card.addEventListener('click', function() {
                     var id = this.dataset.id;
                     var name = this.querySelector('.project-name').textContent;
-                    var item = findItem(data.icon, id);
-                    if (item) {
-                        linkModalTitle.textContent = name;
-                        linkModal.dataset.currentId = id;
-                        linkModal.dataset.currentType = 'icon';
-                        showLinkModal();
-                    }
+                    openLinkModalFor(findItem(data.icon, id), name);
                 });
             })(iconCards[i]);
         }
@@ -748,13 +739,7 @@
                 card.addEventListener('click', function() {
                     var id = this.dataset.id;
                     var name = this.querySelector('.project-name').textContent;
-                    var item = findItem(data.watch, id);
-                    if (item) {
-                        linkModalTitle.textContent = name;
-                        linkModal.dataset.currentId = id;
-                        linkModal.dataset.currentType = 'watch';
-                        showLinkModal();
-                    }
+                    openLinkModalFor(findItem(data.watch, id), name);
                 });
             })(watchCards[i]);
         }
@@ -765,6 +750,46 @@
             if (arr[i].id === id) return arr[i];
         }
         return null;
+    }
+
+    // 读取条目的链接：优先 links 数组，兼容旧数据里的 link / xhs 字段
+    function getItemLinks(item) {
+        var out = [];
+        if (item && item.links && item.links.length) {
+            for (var i = 0; i < item.links.length; i++) {
+                var l = item.links[i];
+                if (l && l.url) out.push({ label: l.label || '打开', url: l.url });
+            }
+            return out;
+        }
+        if (item && item.link) out.push({ label: '爱发电', url: item.link });
+        if (item && item.xhs) out.push({ label: '小红书', url: item.xhs });
+        return out;
+    }
+
+    // 按条目自己的链接动态生成弹窗按钮（图标包 / 手表）
+    function openLinkModalFor(item, name) {
+        var links = getItemLinks(item);
+        if (!links.length) {
+            alert('暂未上架，敬请期待！');
+            return;
+        }
+        var box = document.getElementById('linkModalActions');
+        box.innerHTML = '';
+        for (var i = 0; i < links.length; i++) {
+            (function(link) {
+                var btn = document.createElement('button');
+                btn.className = 'modal-btn';
+                btn.textContent = link.label;
+                btn.addEventListener('click', function() {
+                    window.open(link.url, '_blank');
+                    hideLinkModal();
+                });
+                box.appendChild(btn);
+            })(links[i]);
+        }
+        linkModalTitle.textContent = name;
+        showLinkModal();
     }
 
         // ===== 更新滑块位置 =====
@@ -878,26 +903,7 @@
     linkCloseBtn.onclick = hideLinkModal;
     linkModal.addEventListener('click', function(e) { if (e.target === linkModal) hideLinkModal(); });
 
-    // 链接弹窗按钮
-    var linkModalBtns = linkModal.querySelectorAll('.modal-btn');
-    for (var i = 0; i < linkModalBtns.length; i++) {
-        (function(btn) {
-            btn.addEventListener('click', function() {
-                var brand = this.dataset.brand;
-                var currentId = linkModal.dataset.currentId;
-                var currentType = linkModal.dataset.currentType;
-                var items = siteData[currentType];
-                var item = findItem(items, currentId);
-                var url = item && item[brand];
-                if (url) {
-                    window.open(url, '_blank');
-                } else {
-                    alert('暂未上架，敬请期待！');
-                }
-                hideLinkModal();
-            });
-        })(linkModalBtns[i]);
-    }
+    // 链接弹窗的按钮已在 openLinkModalFor() 里按条目数据动态生成，这里不再需要固定绑定
 
     // 头像切换
     var avatar = document.getElementById('avatarImg');

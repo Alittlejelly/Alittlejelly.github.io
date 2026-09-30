@@ -173,6 +173,22 @@
         .upload-btn:hover { background: #2c2c4a; }
         .upload-btn:disabled { background: #ccc; cursor: default; }
 
+        /* 自定义链接行 */
+        .link-row { display: flex; gap: 6px; align-items: center; margin-bottom: 6px; }
+        .form-group .link-row input.link-label { flex: 0 0 96px; }
+        .form-group .link-row input.link-url { flex: 1 1 auto; min-width: 0; }
+        .link-row .del-link {
+            flex-shrink: 0; width: 32px; height: 32px; border: none; border-radius: 9px;
+            background: #f5f5f5; color: #999; font-size: 16px; line-height: 1; cursor: pointer;
+            transition: all 0.2s;
+        }
+        .link-row .del-link:hover { background: #fee2e2; color: #dc2626; }
+        .add-link-btn {
+            padding: 6px 14px; border: 1px dashed #ddd; border-radius: 9px; background: #fafafa;
+            color: #666; font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.2s;
+        }
+        .add-link-btn:hover { background: #f0f0f0; color: #1a1a2e; border-color: #ccc; }
+
         .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
         .modal-actions button {
             padding: 8px 20px; border: none; border-radius: 10px; font-size: 14px; font-weight: 500;
@@ -446,13 +462,11 @@
             <div class="form-group"><label>OPPO 链接</label><input id="editOppo" placeholder="可选"></div>
             <div class="form-group"><label>vivo 链接</label><input id="editVivo" placeholder="可选"></div>
         </div>
-        <div class="form-group" id="singleLinkGroup" style="display:none">
-            <label>爱发电链接</label>
-            <input id="editLink" placeholder="爱发电链接地址">
-        </div>
-        <div class="form-group" id="xhsLinkGroup" style="display:none">
-            <label>小红书链接</label>
-            <input id="editXhs" placeholder="小红书链接地址">
+        <div class="form-group" id="linksGroup" style="display:none">
+            <label>链接（名称和地址都可以自定义）</label>
+            <div id="linkRows"></div>
+            <button type="button" class="add-link-btn" onclick="addLinkRow()">+ 添加链接</button>
+            <div class="helper">例如「爱发电」「小红书」「酷安」，想加几条都行</div>
         </div>
         <div class="modal-actions">
             <button class="cancel-btn" onclick="closeEditModal()">取消</button>
@@ -716,6 +730,64 @@
         updateMobileSlider();
     }
 
+    // ===== 自定义链接（图标包 / 手表） =====
+    function escapeHtml(s) {
+        return String(s == null ? '' : s)
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
+    // 读取条目的链接：优先 links 数组，兼容旧数据里的 link / xhs 字段
+    function itemLinks(item) {
+        var out = [];
+        if (item && item.links && item.links.length) {
+            for (var i = 0; i < item.links.length; i++) {
+                var l = item.links[i];
+                if (l && l.url) out.push({ label: l.label || '打开', url: l.url });
+            }
+            return out;
+        }
+        if (item && item.link) out.push({ label: '爱发电', url: item.link });
+        if (item && item.xhs) out.push({ label: '小红书', url: item.xhs });
+        return out;
+    }
+
+    function addLinkRow(label, url) {
+        var row = document.createElement('div');
+        row.className = 'link-row';
+        row.innerHTML = '<input class="link-label" placeholder="名称">' +
+                        '<input class="link-url" placeholder="https://...">' +
+                        '<button type="button" class="del-link" title="删除这条">&times;</button>';
+        row.querySelector('.link-label').value = label || '';
+        row.querySelector('.link-url').value = url || '';
+        row.querySelector('.del-link').addEventListener('click', function() {
+            var box = document.getElementById('linkRows');
+            box.removeChild(row);
+            if (!box.children.length) addLinkRow();
+        });
+        document.getElementById('linkRows').appendChild(row);
+    }
+
+    function setLinkRows(list) {
+        var box = document.getElementById('linkRows');
+        box.innerHTML = '';
+        var items = list || [];
+        for (var i = 0; i < items.length; i++) addLinkRow(items[i].label, items[i].url);
+        if (!items.length) addLinkRow();
+    }
+
+    function collectLinks() {
+        var rows = document.querySelectorAll('#linkRows .link-row');
+        var out = [];
+        for (var i = 0; i < rows.length; i++) {
+            var label = rows[i].querySelector('.link-label').value.trim();
+            var url = rows[i].querySelector('.link-url').value.trim();
+            if (!url) continue;
+            out.push({ label: label || '打开', url: url });
+        }
+        return out;
+    }
+
     // ===== 渲染 =====
     function renderAll() {
         renderGrid('theme', 'themeGrid', false);
@@ -735,8 +807,14 @@
                            '<span class="tag' + (item.oppo ? ' has-link' : '') + '">OPPO</span>' +
                            '<span class="tag' + (item.vivo ? ' has-link' : '') + '">vivo</span>';
             } else {
-                linkTags = '<span class="tag' + (item.link ? ' has-link' : '') + '">爱发电</span>' +
-                           '<span class="tag' + (item.xhs ? ' has-link' : '') + '">小红书</span>';
+                var links = itemLinks(item);
+                if (!links.length) {
+                    linkTags = '<span class="tag">暂无链接</span>';
+                } else {
+                    for (var k = 0; k < links.length; k++) {
+                        linkTags += '<span class="tag has-link">' + escapeHtml(links[k].label) + '</span>';
+                    }
+                }
             }
             html += '<div class="manage-card">' +
                         '<div class="preview' + (wide ? ' wide' : '') + '" style="background-image:url(' + item.img + ')"></div>' +
@@ -783,16 +861,14 @@
 
         if (type === 'theme') {
             document.getElementById('brandFields').style.display = 'block';
-            document.getElementById('singleLinkGroup').style.display = 'none';
+            document.getElementById('linksGroup').style.display = 'none';
             document.getElementById('editXiaomi').value = item.xiaomi || '';
             document.getElementById('editOppo').value = item.oppo || '';
             document.getElementById('editVivo').value = item.vivo || '';
         } else {
             document.getElementById('brandFields').style.display = 'none';
-            document.getElementById('singleLinkGroup').style.display = 'block';
-            document.getElementById('xhsLinkGroup').style.display = 'block';
-            document.getElementById('editLink').value = item.link || '';
-            document.getElementById('editXhs').value = item.xhs || '';
+            document.getElementById('linksGroup').style.display = 'block';
+            setLinkRows(itemLinks(item));
         }
 
         document.getElementById('editModal').classList.add('show');
@@ -810,17 +886,14 @@
         document.getElementById('editXiaomi').value = '';
         document.getElementById('editOppo').value = '';
         document.getElementById('editVivo').value = '';
-        document.getElementById('editLink').value = '';
-        document.getElementById('editXhs').value = '';
+        setLinkRows([]);
 
         if (type === 'theme') {
             document.getElementById('brandFields').style.display = 'block';
-            document.getElementById('singleLinkGroup').style.display = 'none';
-            document.getElementById('xhsLinkGroup').style.display = 'none';
+            document.getElementById('linksGroup').style.display = 'none';
         } else {
             document.getElementById('brandFields').style.display = 'none';
-            document.getElementById('singleLinkGroup').style.display = 'block';
-            document.getElementById('xhsLinkGroup').style.display = 'block';
+            document.getElementById('linksGroup').style.display = 'block';
         }
 
         document.getElementById('editModal').classList.add('show');
@@ -867,21 +940,21 @@
                 items.push({ id:id, name:name, img:img, xiaomi:xiaomi, oppo:oppo, vivo:vivo });
             }
         } else {
-            var link = document.getElementById('editLink').value.trim();
-            var xhs = document.getElementById('editXhs').value.trim();
+            var links = collectLinks();
             if (editingId) {
                 for (var i = 0; i < items.length; i++) {
                     if (items[i].id === editingId) {
                         items[i].id = id;
                         items[i].name = name;
                         items[i].img = img;
-                        items[i].link = link;
-                        items[i].xhs = xhs;
+                        items[i].links = links;
+                        delete items[i].link;
+                        delete items[i].xhs;
                         break;
                     }
                 }
             } else {
-                items.push({ id:id, name:name, img:img, link:link, xhs:xhs });
+                items.push({ id:id, name:name, img:img, links:links });
             }
         }
 
