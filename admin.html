@@ -157,6 +157,22 @@
         .form-group input:focus { border-color: #1a1a2e; }
         .form-group .helper { font-size: 11px; color: #bbb; margin-top: 2px; }
 
+        /* 缩略图上传 */
+        .thumb-row { display: flex; gap: 12px; align-items: center; }
+        .thumb-preview {
+            width: 84px; height: 84px; flex-shrink: 0; border-radius: 12px;
+            border: 1px dashed #e2e2e2; background: #fafafa center/cover no-repeat;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 11px; color: #ccc; overflow: hidden;
+        }
+        .thumb-side { flex: 1; min-width: 0; }
+        .upload-btn {
+            padding: 7px 16px; border: none; border-radius: 10px; background: #1a1a2e; color: #fff;
+            font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s;
+        }
+        .upload-btn:hover { background: #2c2c4a; }
+        .upload-btn:disabled { background: #ccc; cursor: default; }
+
         .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
         .modal-actions button {
             padding: 8px 20px; border: none; border-radius: 10px; font-size: 14px; font-weight: 500;
@@ -414,9 +430,16 @@
             <input id="editName" placeholder="显示的名称">
         </div>
         <div class="form-group">
-            <label>缩略图路径</label>
-            <input id="editImg" placeholder="如 theme_preview/recircle.webp">
-            <div class="helper">存放在对应分类的预览文件夹中</div>
+            <label>缩略图</label>
+            <div class="thumb-row">
+                <div class="thumb-preview" id="thumbPreview">未选择</div>
+                <div class="thumb-side">
+                    <button type="button" class="upload-btn" id="uploadBtn" onclick="document.getElementById('thumbFile').click()">上传图片</button>
+                    <input type="file" id="thumbFile" accept="image/*" hidden>
+                    <div class="helper" id="thumbHint">选择文件自动上传到 GitHub 对应目录；也可直接填写下方路径</div>
+                </div>
+            </div>
+            <input id="editImg" placeholder="上传后自动填入，也可手动填写路径，如 theme_preview/recircle.webp" style="margin-top:8px">
         </div>
         <div id="brandFields">
             <div class="form-group"><label>小米链接</label><input id="editXiaomi" placeholder="可选"></div>
@@ -496,6 +519,123 @@
             throw new Error('获取 SHA 失败: ' + JSON.stringify(json));
         });
     }
+
+    // ===== 缩略图上传：选文件 → 传到对应预览目录 → 把路径读回表单 =====
+    var UPLOAD_DIRS = { theme: 'theme_preview', icon: 'iconpack_preview', watch: 'watch_preview' };
+    var UPLOAD_EXTS = ['png', 'jpg', 'jpeg', 'webp', 'gif', 'avif'];
+    var MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
+
+    function contentsApiUrl(filePath) {
+        return 'https://api.github.com/repos/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/contents/' + filePath;
+    }
+
+    // 取某个文件在当前分支上的 SHA；文件不存在返回 null（表示新建）
+    function getContentSha(filePath) {
+        return fetch(contentsApiUrl(filePath) + '?ref=' + GITHUB_BRANCH, {
+            headers: { 'Authorization': 'token ' + GITHUB_TOKEN }
+        })
+        .then(function(res) { return res.status === 404 ? null : res.json(); })
+        .then(function(json) { return json && json.sha ? json.sha : null; });
+    }
+
+    function readFileAsDataUrl(file) {
+        return new Promise(function(resolve, reject) {
+            var reader = new FileReader();
+            reader.onload = function() { resolve(reader.result); };
+            reader.onerror = function() { reject(new Error('本地读取失败')); };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    // 预览：本地用刚选的文件，打开弹窗时用已保存的路径
+    function setThumbPreview(src) {
+        var box = document.getElementById('thumbPreview');
+        if (src) {
+            box.style.backgroundImage = 'url("' + String(src).replace(/"/g, '%22') + '")';
+            box.textContent = '';
+        } else {
+            box.style.backgroundImage = '';
+            box.textContent = '未选择';
+        }
+    }
+
+    function uploadThumbnail(file) {
+        if (!GITHUB_TOKEN) {
+            showToast('请先设置 GitHub Token！双击标题打开设置');
+            return;
+        }
+        if (file.type && file.type.indexOf('image/') !== 0) {
+            showToast('请选择图片文件');
+            return;
+        }
+        if (file.size > MAX_UPLOAD_BYTES) {
+            showToast('图片超过 5MB，请先压缩再上传');
+            return;
+        }
+
+        var id = document.getElementById('editId').value.trim().replace(/[^A-Za-z0-9_-]/g, '');
+        if (!id) {
+            showToast('请先填写 ID（上传后用作图片文件名）');
+            return;
+        }
+
+        var dir = UPLOAD_DIRS[currentType] || UPLOAD_DIRS.theme;
+        var ext = (file.name.split('.').pop() || '').toLowerCase();
+        if (UPLOAD_EXTS.indexOf(ext) < 0) ext = 'png';
+        var targetPath = dir + '/' + id + '.' + ext;
+
+        var btn = document.getElementById('uploadBtn');
+        var hint = document.getElementById('thumbHint');
+        btn.disabled = true;
+        btn.textContent = '上传中…';
+        hint.textContent = '正在上传到 ' + targetPath + ' …';
+
+        readFileAsDataUrl(file)
+            .then(function(dataUrl) {
+                setThumbPreview(dataUrl);
+                return getContentSha(targetPath).then(function(sha) {
+                    return fetch(contentsApiUrl(targetPath), {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': 'token ' + GITHUB_TOKEN,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            message: '上传缩略图 ' + targetPath,
+                            content: dataUrl.split(',')[1],
+                            branch: GITHUB_BRANCH,
+                            sha: sha || undefined
+                        })
+                    });
+                });
+            })
+            .then(function(res) {
+                return res.json().then(function(json) { return { ok: res.ok, status: res.status, json: json }; });
+            })
+            .then(function(r) {
+                if (!r.ok || !r.json.content) {
+                    throw new Error((r.json && r.json.message) || ('HTTP ' + r.status));
+                }
+                document.getElementById('editImg').value = targetPath;
+                hint.textContent = '已上传：' + targetPath + '（Pages 部署后前台才可见）';
+                showToast('图片已上传，记得点「提交到 GitHub」保存数据');
+            })
+            .catch(function(err) {
+                hint.textContent = '上传失败：' + err.message;
+                setThumbPreview(document.getElementById('editImg').value);
+                showToast('上传失败: ' + err.message);
+            })
+            .finally(function() {
+                btn.disabled = false;
+                btn.textContent = '上传图片';
+                document.getElementById('thumbFile').value = '';
+            });
+    }
+
+    document.getElementById('thumbFile').addEventListener('change', function() {
+        var file = this.files && this.files[0];
+        if (file) uploadThumbnail(file);
+    });
 
     // ===== 通过 GitHub API 直接提交 data.json =====
     function saveDataToFile() {
@@ -638,6 +778,8 @@
         document.getElementById('editId').value = item.id;
         document.getElementById('editName').value = item.name;
         document.getElementById('editImg').value = item.img;
+        setThumbPreview(item.img);
+        document.getElementById('thumbHint').textContent = '选择新图片可替换，路径会自动更新';
 
         if (type === 'theme') {
             document.getElementById('brandFields').style.display = 'block';
@@ -663,6 +805,8 @@
         document.getElementById('editId').value = '';
         document.getElementById('editName').value = '';
         document.getElementById('editImg').value = '';
+        setThumbPreview('');
+        document.getElementById('thumbHint').textContent = '选择后自动上传到 GitHub 对应目录，并填入路径';
         document.getElementById('editXiaomi').value = '';
         document.getElementById('editOppo').value = '';
         document.getElementById('editVivo').value = '';
@@ -692,8 +836,12 @@
         var name = document.getElementById('editName').value.trim();
         var img = document.getElementById('editImg').value.trim();
 
-        if (!id || !name || !img) {
+        if (!id || !name) {
             showToast('请填写完整信息');
+            return;
+        }
+        if (!img) {
+            showToast('请上传缩略图或填写图片路径');
             return;
         }
 
@@ -797,7 +945,7 @@
             showToast('Token 验证失败: ' + err.message);
         })
         .finally(function() {
-            btn.textContent = '保存';
+            btn.textContent = '验证 Token';
             btn.disabled = false;
         });
     }
