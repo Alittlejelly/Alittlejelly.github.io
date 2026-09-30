@@ -63,8 +63,14 @@
       "name": "重圆图标包",
       "img": "https://cdn.lightxi.com/cloudreve/uploads/2026/07/17/NTPGlUQ3_chongyuan.png",
       "links": [
-        { "label": "爱发电", "url": "https://afdian.com/item/da336be6c64811ee96b95254001e7c00" },
-        { "label": "小红书", "url": "http://xhslink.com/o/395ICoBgERm" }
+        {
+          "label": "爱发电",
+          "url": "https://afdian.com/item/da336be6c64811ee96b95254001e7c00"
+        },
+        {
+          "label": "小红书",
+          "url": "http://xhslink.com/o/395ICoBgERm"
+        }
       ]
     },
     {
@@ -72,8 +78,14 @@
       "name": "圆启图标包",
       "img": "https://cdn.lightxi.com/cloudreve/uploads/2026/07/17/ln3dd2wA_yuanqi.png",
       "links": [
-        { "label": "爱发电", "url": "https://afdian.com/item/f7d3152ec28c11f08b7e5254001e7c00" },
-        { "label": "小红书", "url": "http://xhslink.com/o/2W2lNYGSrIb" }
+        {
+          "label": "爱发电",
+          "url": "https://afdian.com/item/f7d3152ec28c11f08b7e5254001e7c00"
+        },
+        {
+          "label": "小红书",
+          "url": "http://xhslink.com/o/2W2lNYGSrIb"
+        }
       ]
     },
     {
@@ -81,8 +93,14 @@
       "name": "远影",
       "img": "https://cdn.lightxi.com/cloudreve/uploads/2026/07/17/Rj30zUyq_yuanying.png",
       "links": [
-        { "label": "爱发电", "url": "https://www.ifdian.net/item/6d0fa6b403d211f1a09b5254001e7c00" },
-        { "label": "小红书", "url": "http://xhslink.com/o/3cJdGw7fr0x" }
+        {
+          "label": "爱发电",
+          "url": "https://www.ifdian.net/item/6d0fa6b403d211f1a09b5254001e7c00"
+        },
+        {
+          "label": "小红书",
+          "url": "http://xhslink.com/o/3cJdGw7fr0x"
+        }
       ]
     }
   ],
@@ -92,7 +110,22 @@
       "name": "重圆表盘",
       "img": "watch_preview/circle.webp",
       "links": [
-        { "label": "下载", "url": "https://www.bandbbs.cn/resources/3368/" }
+        {
+          "label": "下载",
+          "url": "https://www.bandbbs.cn/resources/3368/"
+        }
+      ]
+    },
+    {
+      "id": "nexio",
+      "name": "Nexio课程表手环版",
+      "img": "https://cdn.lightxi.com/cloudreve/uploads/2026/09/30/nAnVFkzG_nexio%20for%20band.png",
+      "links": [
+        {
+          "label": "网盘",
+          "url": "https://www.akidepot.com/s/yOeJhG",
+          "password": "Nexio"
+        }
       ]
     }
   ]
