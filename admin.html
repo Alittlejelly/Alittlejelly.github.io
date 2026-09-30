@@ -177,6 +177,7 @@
         .link-row { display: flex; gap: 6px; align-items: center; margin-bottom: 6px; }
         .form-group .link-row input.link-label { flex: 0 0 96px; }
         .form-group .link-row input.link-url { flex: 1 1 auto; min-width: 0; }
+        .form-group .link-row input.link-pwd { flex: 0 0 88px; }
         .link-row .del-link {
             flex-shrink: 0; width: 32px; height: 32px; border: none; border-radius: 9px;
             background: #f5f5f5; color: #999; font-size: 16px; line-height: 1; cursor: pointer;
@@ -325,6 +326,8 @@
             .form-group { margin-bottom: 10px; }
             .form-group label { font-size: 12px; }
             .form-group input { padding: 7px 10px; font-size: 13px; border-radius: 8px; }
+            .form-group .link-row input.link-label { flex-basis: 68px; }
+            .form-group .link-row input.link-pwd { flex-basis: 72px; }
             .modal-actions { margin-top: 16px; }
             .modal-actions button { padding: 7px 16px; font-size: 13px; border-radius: 8px; }
 
@@ -466,7 +469,7 @@
             <label>链接（名称和地址都可以自定义）</label>
             <div id="linkRows"></div>
             <button type="button" class="add-link-btn" onclick="addLinkRow()">+ 添加链接</button>
-            <div class="helper">例如「爱发电」「小红书」「酷安」，想加几条都行</div>
+            <div class="helper">例如「爱发电」「小红书」「酷安」；网盘链接把提取码填在第三格</div>
         </div>
         <div class="modal-actions">
             <button class="cancel-btn" onclick="closeEditModal()">取消</button>
@@ -743,23 +746,25 @@
         if (item && item.links && item.links.length) {
             for (var i = 0; i < item.links.length; i++) {
                 var l = item.links[i];
-                if (l && l.url) out.push({ label: l.label || '打开', url: l.url });
+                if (l && l.url) out.push({ label: l.label || '打开', url: l.url, password: l.password || '' });
             }
             return out;
         }
-        if (item && item.link) out.push({ label: '爱发电', url: item.link });
-        if (item && item.xhs) out.push({ label: '小红书', url: item.xhs });
+        if (item && item.link) out.push({ label: '爱发电', url: item.link, password: '' });
+        if (item && item.xhs) out.push({ label: '小红书', url: item.xhs, password: '' });
         return out;
     }
 
-    function addLinkRow(label, url) {
+    function addLinkRow(label, url, password) {
         var row = document.createElement('div');
         row.className = 'link-row';
         row.innerHTML = '<input class="link-label" placeholder="名称">' +
                         '<input class="link-url" placeholder="https://...">' +
+                        '<input class="link-pwd" placeholder="提取码">' +
                         '<button type="button" class="del-link" title="删除这条">&times;</button>';
         row.querySelector('.link-label').value = label || '';
         row.querySelector('.link-url').value = url || '';
+        row.querySelector('.link-pwd').value = password || '';
         row.querySelector('.del-link').addEventListener('click', function() {
             var box = document.getElementById('linkRows');
             box.removeChild(row);
@@ -772,7 +777,7 @@
         var box = document.getElementById('linkRows');
         box.innerHTML = '';
         var items = list || [];
-        for (var i = 0; i < items.length; i++) addLinkRow(items[i].label, items[i].url);
+        for (var i = 0; i < items.length; i++) addLinkRow(items[i].label, items[i].url, items[i].password);
         if (!items.length) addLinkRow();
     }
 
@@ -782,8 +787,11 @@
         for (var i = 0; i < rows.length; i++) {
             var label = rows[i].querySelector('.link-label').value.trim();
             var url = rows[i].querySelector('.link-url').value.trim();
+            var pwd = rows[i].querySelector('.link-pwd').value.trim();
             if (!url) continue;
-            out.push({ label: label || '打开', url: url });
+            var link = { label: label || '打开', url: url };
+            if (pwd) link.password = pwd;
+            out.push(link);
         }
         return out;
     }
