@@ -122,13 +122,13 @@
       "img": "https://cdn.lightxi.com/cloudreve/uploads/2026/10/03/TPXVzA8f_nexio%20for%20band.png",
       "links": [
         {
+          "label": "astrobox",
+          "url": "https://abox.run/open?source=resv2&id=com.haooz.chedule&provider=OfficialV2"
+        },
+        {
           "label": "网盘",
           "url": "https://www.akidepot.com/s/yOeJhG",
           "password": "Nexio"
-        },
-        {
-          "label": "astrobox",
-          "url": "https://abox.run/open?source=resv2&id=com.haooz.chedule&provider=OfficialV2"
         }
       ]
     }
